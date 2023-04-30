@@ -145,10 +145,13 @@ public class GameHandler {
             if(player.x == cellX && player.y == cellY)
                 return false;
 
+        if(cellX < 0 || cellX >= 10 ||  cellY < 0 || cellY >= 10)
+            return false;
+
         if(this.gamePanel.getTile(cellX, cellY).getLevel() == 4)
             return false;
 
-        return cellX >= 0 && cellX < 10 && cellY >= 0 && cellY < 10;
+        return true;
     }
 
 }
