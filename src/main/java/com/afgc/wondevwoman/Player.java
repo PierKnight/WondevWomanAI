@@ -13,12 +13,12 @@ public class Player extends ImageView {
 
     public IPlayer player;
 
-    private final GamePanel gamePanel;
+    private final GameHandler gameHandler;
 
-    public Player(GamePanel gamePanel, IPlayer player)
+    public Player(GameHandler gameHandler, IPlayer player)
     {
-        this.gamePanel = gamePanel;
-        Image image = new Image("https://cdn-icons-png.flaticon.com/512/1828/1828108.png",gamePanel.tileSize(),gamePanel.tileSize(),true,true,true);
+        this.gameHandler = gameHandler;
+        Image image = new Image("https://cdn-icons-png.flaticon.com/512/1828/1828108.png", Size.WIDTH, Size.HEIGHT, true, true, true);
 
         this.setImage(image);
         this.player = player;
@@ -28,15 +28,16 @@ public class Player extends ImageView {
 
     public boolean move(int dirX,int dirY)
     {
-        if(!gamePanel.isSafePosition(x + dirX,y + dirY))
+        if(!gameHandler.isSafePosition(x + dirX,y + dirY))
             return false;
 
-        gamePanel.tiles[x][y].levelUp();
-        transition.setFromX(  x * gamePanel.tileSize());
-        transition.setFromY(  y * gamePanel.tileSize());
+        gameHandler.updateTile(x, y);
 
-        transition.setToX( (x + dirX) * gamePanel.tileSize());
-        transition.setToY( (y + dirY) * gamePanel.tileSize());
+        transition.setFromX(  x * Size.WIDTH);
+        transition.setFromY(  y * Size.HEIGHT);
+
+        transition.setToX( (x + dirX) * Size.WIDTH);
+        transition.setToY( (y + dirY) * Size.HEIGHT);
         transition.playFromStart();
         x += dirX;
         y += dirY;

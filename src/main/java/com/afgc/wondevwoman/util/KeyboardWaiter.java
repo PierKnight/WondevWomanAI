@@ -1,6 +1,6 @@
 package com.afgc.wondevwoman.util;
 
-import com.afgc.wondevwoman.HelloApplication;
+import com.afgc.wondevwoman.Main;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -22,8 +22,8 @@ public class KeyboardWaiter {
         this.lock = new ReentrantLock();
         this.condition = lock.newCondition();
 
-
-        HelloApplication.gamePanel.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        // modificato
+        Main.GAME_HANDLER.getMyGamePanel().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             lock.lock();
             receivedInput = event;
             condition.signal();

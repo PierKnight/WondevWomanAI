@@ -8,19 +8,18 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class Main extends Application {
 
     private KeyEvent lastEvent;
 
-
-
-    public static final GamePanel gamePanel = new GamePanel();
+    public static final GameHandler GAME_HANDLER = GameHandler.getInstance();
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("hello-view.fxml"));
+        Scene scene = new Scene(GameHandler.getInstance().getMyGamePanel(), 320, 240);
+
+        stage.setTitle("WondevWoman");
         stage.setScene(scene);
         stage.setWidth(500);
         stage.setMinWidth(500);
@@ -29,8 +28,7 @@ public class HelloApplication extends Application {
         stage.show();
 
 
-        gamePanel.requestFocus();
-
+        GAME_HANDLER.getMyGamePanel().requestFocus();
 
     }
 
