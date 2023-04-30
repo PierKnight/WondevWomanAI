@@ -1,5 +1,9 @@
 package com.afgc.wondevwoman;
 
+import com.afgc.wondevwoman.graphic.GamePanel;
+import com.afgc.wondevwoman.players.HumanPlayer;
+import com.afgc.wondevwoman.players.IPlayer;
+import com.afgc.wondevwoman.players.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Service;
@@ -65,8 +69,8 @@ public class GameHandler {
         });
 
 
-        players[0] = new Player(this, new HumanPlayer());
-        players[1] = new Player(this, new HumanPlayer());
+        players[0] = new Player(this, new HumanPlayer(),0);
+        players[1] = new Player(this, new HumanPlayer(),1);
         players[1].move(5,3);
 
         for (Player player : this.players)
@@ -108,9 +112,9 @@ public class GameHandler {
 
     private void nextTurn()
     {
-
         if(turn >= 0)
-        getCurrentPlayer().setScaleY(1);
+            getCurrentPlayer().toggleBorder();
+
         turn += 1;
         timer.playFromStart();
         this.moveService.restart();
@@ -118,10 +122,7 @@ public class GameHandler {
         timerLabel.setText(String.valueOf(turnSeconds));
         this.currentMove = 0;
 
-
-        getCurrentPlayer().setScaleY(2);
-
-
+        getCurrentPlayer().toggleBorder();
     }
 
     public Player getCurrentPlayer()

@@ -1,4 +1,4 @@
-package com.afgc.wondevwoman;
+package com.afgc.wondevwoman.graphic;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;

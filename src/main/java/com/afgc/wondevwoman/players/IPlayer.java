@@ -1,4 +1,4 @@
-package com.afgc.wondevwoman;
+package com.afgc.wondevwoman.players;
 
 public interface IPlayer {
 

@@ -1,9 +1,9 @@
-package com.afgc.wondevwoman;
+package com.afgc.wondevwoman.players;
 
 import com.afgc.wondevwoman.util.KeyboardWaiter;
 import javafx.scene.input.KeyCode;
 
-public class HumanPlayer implements IPlayer{
+public class HumanPlayer implements IPlayer {
 
 
     @Override
