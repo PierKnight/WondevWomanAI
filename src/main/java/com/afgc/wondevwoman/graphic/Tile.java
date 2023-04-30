@@ -5,9 +5,13 @@ import javafx.scene.image.ImageView;
 
 public class Tile extends ImageView {
 
+    public int getLevel() {
+        return level;
+    }
+
     private int level = 0;
 
-    public Tile(double tileSize)
+    public Tile(double tileSize, int x, int y)
     {
         this.setFitWidth(tileSize);
         this.setFitHeight(tileSize);

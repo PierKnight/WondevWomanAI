@@ -1,6 +1,6 @@
 package com.afgc.wondevwoman.players;
 
-public interface IPlayer {
+public interface MoveProvider {
 
     /**
      * this is called at the start of the player's turn
@@ -9,5 +9,5 @@ public interface IPlayer {
      * @throws InterruptedException when the thread handling this turn is interrupted by the timer
      * @return the move to make
      */
-    int getMove() throws InterruptedException;
+    Move getMove() throws InterruptedException;
 }

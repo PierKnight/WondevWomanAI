@@ -19,7 +19,7 @@ public class GamePanel extends StackPane {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                Tile tile = new Tile(this.getTileSize());
+                Tile tile = new Tile(this.getTileSize(),i,j);
                 tile.setTranslateX(i * tileSize);
                 tile.setTranslateY(j * tileSize);
                 this.getChildren().add(tile);

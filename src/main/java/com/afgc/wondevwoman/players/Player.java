@@ -4,7 +4,6 @@ import com.afgc.wondevwoman.GameHandler;
 import com.afgc.wondevwoman.graphic.ImageManager;
 import com.afgc.wondevwoman.graphic.Size;
 import javafx.animation.TranslateTransition;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -15,13 +14,13 @@ public class Player extends StackPane {
     public int y;
     public TranslateTransition transition =  new TranslateTransition(Duration.millis(150),this);
 
-    public IPlayer player;
+    public MoveProvider player;
 
     private final GameHandler gameHandler;
 
     private final ImageView border;
 
-    public Player(GameHandler gameHandler, IPlayer player, int number)
+    public Player(GameHandler gameHandler, MoveProvider player, int number)
     {
         this.gameHandler = gameHandler;
         ImageView imageView = new ImageView(ImageManager.players[number]);
@@ -47,8 +46,6 @@ public class Player extends StackPane {
     {
         if(!gameHandler.isSafePosition(x + dirX,y + dirY))
             return false;
-
-        gameHandler.updateTile(x, y);
 
         transition.setFromX(  x * Size.WIDTH);
         transition.setFromY(  y * Size.HEIGHT);

@@ -2,7 +2,8 @@ package com.afgc.wondevwoman;
 
 import com.afgc.wondevwoman.graphic.GamePanel;
 import com.afgc.wondevwoman.players.HumanPlayer;
-import com.afgc.wondevwoman.players.IPlayer;
+import com.afgc.wondevwoman.players.Move;
+import com.afgc.wondevwoman.players.MoveProvider;
 import com.afgc.wondevwoman.players.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -36,14 +37,14 @@ public class GameHandler {
     private final Label timerLabel;
 
 
-    private final Service<Integer> moveService = new Service<Integer>() {
+    private final Service<Move> moveService = new Service<Move>() {
         @Override
-        protected Task<Integer> createTask() {
+        protected Task<Move> createTask() {
             //this is called only on the javafx thread, so this is thread safe
-            IPlayer player = getCurrentPlayer().player;
+            MoveProvider player = getCurrentPlayer().player;
             return new Task<>() {
                 @Override
-                protected Integer call() throws Exception {
+                protected Move call() throws Exception {
                     //here this service will wait for a move given a generic player
                     return player.getMove();
                 }
@@ -60,8 +61,11 @@ public class GameHandler {
         this.moveService.setExecutor(Executors.newFixedThreadPool(1));
         this.moveService.setOnSucceeded(event -> {
             //if the player moved go to the next turn otherwise reset the service
-            if(getCurrentPlayer().move(moveService.getValue(),0))
+            Move moveResult = moveService.getValue();
+
+            if(getCurrentPlayer().move(moveResult.dirX(),moveResult.dirY()) && this.updateTile(moveResult.placeX(), moveResult.placeY())) {
                 nextTurn();
+            }
             else {
                 System.out.println("YOU CANNOT DO THIS MOVE!" + this.turn % 2);
                 this.moveService.restart();
@@ -96,8 +100,12 @@ public class GameHandler {
         this.gamePanel.getChildren().add(timerLabel);
     }
 
-    public void updateTile(int x, int y) {
+    public boolean updateTile(int x, int y) {
+        if(!this.isSafePosition(x,y))
+            return false;
+
         this.gamePanel.getTile(x, y).levelUp();
+        return true;
     }
 
     void makeMove()
@@ -136,6 +144,9 @@ public class GameHandler {
         for (Player player : this.players)
             if(player.x == cellX && player.y == cellY)
                 return false;
+
+        if(this.gamePanel.getTile(cellX, cellY).getLevel() == 4)
+            return false;
 
         return cellX >= 0 && cellX < 10 && cellY >= 0 && cellY < 10;
     }
