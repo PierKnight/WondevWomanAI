@@ -1,8 +1,7 @@
-package com.afgc.wondevwoman.players;
+package com.afgc.wondevwoman.graphic;
 
 import com.afgc.wondevwoman.GameHandler;
-import com.afgc.wondevwoman.graphic.ImageManager;
-import com.afgc.wondevwoman.graphic.Size;
+import com.afgc.wondevwoman.Settings;
 import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -21,16 +20,16 @@ public class Pawn extends StackPane {
     {
         this.gameHandler = gameHandler;
         ImageView imageView = new ImageView(ImageManager.players[team]);
-        imageView.setFitHeight(Size.HEIGHT);
-        imageView.setFitWidth(Size.WIDTH);
+        imageView.setFitHeight(Settings.HEIGHT);
+        imageView.setFitWidth(Settings.WIDTH);
 
         border = new ImageView(ImageManager.border);
-        border.setFitHeight(Size.HEIGHT);
-        border.setFitWidth(Size.WIDTH);
+        border.setFitHeight(Settings.HEIGHT);
+        border.setFitWidth(Settings.WIDTH);
 
         this.getChildren().addAll(imageView, border);
-        this.setPrefSize(Size.WIDTH, Size.HEIGHT);
-        this.setMaxSize(Size.WIDTH, Size.HEIGHT);
+        this.setPrefSize(Settings.WIDTH, Settings.HEIGHT);
+        this.setMaxSize(Settings.WIDTH, Settings.HEIGHT);
         this.toggleBorder(); // rendo invisibile il bordo all'inizio del gioco
     }
 
@@ -43,11 +42,11 @@ public class Pawn extends StackPane {
         if(!gameHandler.isSafePosition(x + dirX,y + dirY))
             return false;
 
-        transition.setFromX(  x * Size.WIDTH);
-        transition.setFromY(  y * Size.HEIGHT);
+        transition.setFromX(  x * Settings.WIDTH);
+        transition.setFromY(  y * Settings.HEIGHT);
 
-        transition.setToX( (x + dirX) * Size.WIDTH);
-        transition.setToY( (y + dirY) * Size.HEIGHT);
+        transition.setToX( (x + dirX) * Settings.WIDTH);
+        transition.setToY( (y + dirY) * Settings.HEIGHT);
         transition.playFromStart();
         x += dirX;
         y += dirY;

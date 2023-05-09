@@ -1,7 +1,8 @@
 package com.afgc.wondevwoman;
 
 import com.afgc.wondevwoman.graphic.GamePanel;
-import com.afgc.wondevwoman.players.*;
+import com.afgc.wondevwoman.graphic.Pawn;
+import com.afgc.wondevwoman.move.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Service;
@@ -21,7 +22,7 @@ public class GameHandler {
         return instance;
     }
 
-    private GamePanel gamePanel = new GamePanel();
+    private final GamePanel gamePanel = new GamePanel();
 
     public GamePanel getMyGamePanel() {
         return this.gamePanel;
@@ -35,7 +36,7 @@ public class GameHandler {
     private final Label timerLabel;
 
 
-    private final Service<Move> moveService = new Service<Move>() {
+    private final Service<Move> moveService = new Service<>() {
         @Override
         protected Task<Move> createTask() {
             //this is called only on the javafx thread, so this is thread safe
@@ -50,34 +51,33 @@ public class GameHandler {
         }
     };
 
-
-    private int currentMove = 0;
-
-
-
     private GameHandler() {
         this.moveService.setExecutor(Executors.newFixedThreadPool(1));
         this.moveService.setOnSucceeded(event -> {
             //if the player moved go to the next turn otherwise reset the service
             Move moveResult = moveService.getValue();
 
-            if(getCurrentPlayer().pawns()[moveResult.pawn()].move(moveResult.dirX(),moveResult.dirY()) && this.updateTile(moveResult.placeX(), moveResult.placeY())) {
-                nextTurn();
+            boolean isLevelUpLegal = isSafePosition(moveResult.getPlaceX(),moveResult.getPlaceY());
+
+            if(isLevelUpLegal && getCurrentPlayer().pawns()[moveResult.getPawn()].move(moveResult.getDirX(),moveResult.getDirY())) {
+                if(this.updateTile(moveResult.getPlaceX(), moveResult.getPlaceY()))
+                    nextTurn();
             }
-            else {
+            else if(!Settings.SKIP_TURN_WITH_ILLEGAL_MOVE){
                 System.out.println("YOU CANNOT DO THIS MOVE!" + this.turn % 2);
                 this.moveService.restart();
             }
+            else
+                nextTurn();
         });
 
 
-        this.players[0] = new Player(createPawns(0),new RandomMoveProvider());
-        this.players[1] = new Player(createPawns(1),new RandomMoveProvider());
+        this.players[0] = new Player(createPawns(0), Settings.FIRST_PLAYER);
+        this.players[1] = new Player(createPawns(1),Settings.SECOND_PLAYER);
 
         timerLabel = new Label();
         timer = new Timeline();
         timer.setCycleCount(Timeline.INDEFINITE);
-
         timer.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(1), event -> {
                     turnSeconds--;
@@ -113,18 +113,6 @@ public class GameHandler {
         return true;
     }
 
-    /*
-    void makeMove()
-    {
-        if(this.currentMove == 0)
-            this.getCurrentPlayer().move(1,0);
-        else if(this.currentMove == 1) {
-            this.gamePanel.getTile(0,0).levelUp();
-            nextTurn();
-        }
-    }
-     */
-
     private void nextTurn()
     {
         //if(turn >= 0)
@@ -135,7 +123,6 @@ public class GameHandler {
         this.moveService.restart();
         turnSeconds = 10;
         timerLabel.setText(String.valueOf(turnSeconds));
-        this.currentMove = 0;
 
         //getCurrentPlayer().toggleBorder();
     }
@@ -157,10 +144,7 @@ public class GameHandler {
         if(cellX < 0 || cellX >= 10 ||  cellY < 0 || cellY >= 10)
             return false;
 
-        if(this.gamePanel.getTile(cellX, cellY).getLevel() == 4)
-            return false;
-
-        return true;
+        return this.gamePanel.getTile(cellX, cellY).getLevel() < 4;
     }
 
 }

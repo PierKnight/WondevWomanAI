@@ -8,6 +8,8 @@ module com.afgc.wondevwoman {
     exports com.afgc.wondevwoman;
     exports com.afgc.wondevwoman.graphic;
     opens com.afgc.wondevwoman.graphic to javafx.fxml;
-    exports com.afgc.wondevwoman.players;
-    opens com.afgc.wondevwoman.players to javafx.fxml;
+    exports com.afgc.wondevwoman.move;
+    opens com.afgc.wondevwoman.move to javafx.fxml;
+    exports com.afgc.wondevwoman.move.emb;
+    opens com.afgc.wondevwoman.move.emb to javafx.fxml;
 }

@@ -1,4 +1,4 @@
-package com.afgc.wondevwoman.players;
+package com.afgc.wondevwoman.move;
 
 public interface MoveProvider {
 
