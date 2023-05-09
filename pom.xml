@@ -38,6 +38,13 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>unical.it</groupId>
+            <artifactId>embASP</artifactId>
+            <version>7.2.0</version>
+            <systemPath>${project.basedir}/lib/embAsp_v7.2.0.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
     </dependencies>
 
     <build>

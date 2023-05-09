@@ -1,6 +1,7 @@
 module com.afgc.wondevwoman {
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.antlr.antlr4.runtime;
 
 
     opens com.afgc.wondevwoman to javafx.fxml;
