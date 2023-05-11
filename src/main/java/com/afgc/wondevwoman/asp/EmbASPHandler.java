@@ -1,5 +1,6 @@
 package com.afgc.wondevwoman.asp;
 
+import com.afgc.wondevwoman.graphic.Pawn;
 import com.afgc.wondevwoman.graphic.Tile;
 import com.afgc.wondevwoman.move.Move;
 import it.unical.mat.embasp.base.InputProgram;

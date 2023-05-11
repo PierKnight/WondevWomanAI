@@ -10,10 +10,14 @@ public class Settings {
     public static final int WIDTH = 50;
     public static final int HEIGHT = 50;
 
+    public static final int TILES = 10;
+
     /**
      * se true significa che quando un {@link MoveProvider} prova a fare una mossa illegale il turno passa all'avversario
      */
     public static final boolean SKIP_TURN_WITH_ILLEGAL_MOVE = true;
+
+    public static final int SECONDS_PER_TURN = 10;
 
     /**
      * qui si può decidere che comportamento affidare al primo plauer per scegliere la mossa

@@ -7,7 +7,7 @@ public class RandomMoveProvider implements MoveProvider {
     private static final Random random = new Random();
 
     @Override
-    public Move getMove() throws InterruptedException {
+    public Move getMove(Player player) throws InterruptedException {
 
         Thread.sleep(500);
 

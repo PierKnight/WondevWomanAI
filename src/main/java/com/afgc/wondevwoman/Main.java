@@ -24,9 +24,9 @@ public class Main extends Application {
         stage.setTitle("WondevWoman");
         stage.setScene(scene);
         stage.setWidth(500);
-        stage.setMinWidth(500);
-        stage.setHeight(540);
-        stage.setResizable(false);
+        stage.setHeight(530);
+        stage.setResizable(true);
+
         stage.show();
 
         GAME_HANDLER.getMyGamePanel().requestFocus();
