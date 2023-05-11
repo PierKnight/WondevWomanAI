@@ -1,5 +1,6 @@
 package com.afgc.wondevwoman.graphic;
 
+import com.afgc.wondevwoman.GameHandler;
 import it.unical.mat.embasp.languages.Id;
 import it.unical.mat.embasp.languages.Param;
 import javafx.scene.image.ImageView;
@@ -14,14 +15,13 @@ public class Tile extends ImageView {
     @Param(2)
     private int level = 0;
 
-    public Tile(double tileSize, int x, int y)
+    public Tile(int x, int y)
     {
-        this.setFitWidth(tileSize);
-        this.setFitHeight(tileSize);
         this.setOnMouseClicked(event -> this.setVisible(false));
         this.setImage(ImageManager.tiles[0]);
         this.posX = x;
         this.posY = y;
+        this.setOnMouseClicked(event -> GameHandler.getInstance().onTileClicked(Tile.this));
     }
 
     public Tile(){}

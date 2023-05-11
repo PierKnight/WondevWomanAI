@@ -2,7 +2,9 @@ package com.afgc.wondevwoman;
 
 import com.afgc.wondevwoman.graphic.GamePanel;
 import com.afgc.wondevwoman.graphic.Pawn;
-import com.afgc.wondevwoman.move.*;
+import com.afgc.wondevwoman.graphic.Tile;
+import com.afgc.wondevwoman.move.Move;
+import com.afgc.wondevwoman.move.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.DoubleBinding;
@@ -55,23 +57,28 @@ public class GameHandler {
             //if the player moved go to the next turn otherwise reset the service
             Move moveResult = moveService.getValue();
 
-            boolean isLevelUpLegal = isSafePosition(moveResult.getPlaceX(),moveResult.getPlaceY());
+            if(moveResult == null) {
+                System.out.println("MOVE NOT FOUND SKIPPING TURN");
+                this.nextTurn();
+                return;
+            }
             Pawn selectedPawn = getCurrentPlayer().pawns()[moveResult.getPawn()];
 
-            if(isLevelUpLegal && selectedPawn.move(moveResult.getDirX(),moveResult.getDirY())) {
-                checkForVictory(selectedPawn);
-                if(this.updateTile(moveResult.getPlaceX(), moveResult.getPlaceY()))
+            if(selectedPawn.move(moveResult.getDirX(),moveResult.getDirY())) {
+                if(this.updateTile(selectedPawn,moveResult.getPlaceX(), moveResult.getPlaceY()))
                     nextTurn();
             }
             else if(!Settings.SKIP_TURN_WITH_ILLEGAL_MOVE){
-                System.out.println("YOU CANNOT DO THIS MOVE!" + this.turn % 2);
+                System.out.println("YOU CANNOT DO THIS MOVE!" + getCurrentPlayer().name());
                 this.moveService.restart();
             }
-            else
+            else {
+                System.out.println("ILLEGAL MOVE " + moveResult + " BY " + getCurrentPlayer().name() + ", SKIPPING TURN");
                 nextTurn();
+            }
         });
         timerLabel = new Label();
-        timerLabel.setViewOrder(1);
+        timerLabel.setViewOrder(-1);
         gameTimer = new Timeline();
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.getKeyFrames().add(
@@ -110,8 +117,8 @@ public class GameHandler {
         return pawns;
     }
 
-    public boolean updateTile(int x, int y) {
-        if(!this.isSafePosition(x,y))
+    public boolean updateTile(Pawn pawn,int x, int y) {
+        if(!this.isSafePosition(pawn,x,y))
             return false;
         this.gamePanel.getTile(x, y).levelUp();
         return true;
@@ -119,16 +126,15 @@ public class GameHandler {
 
     private void nextTurn()
     {
-        //if(turn >= 0)
-        //    getCurrentPlayer().toggleBorder();
+        //do random moves if human player didn't complete the turn in time
+        //if(this.humanMovePhase != HumanMovePhase.PAWN)
+
         turn += 1;
         gameTimer.playFromStart();
-        this.moveService.restart();
+        if(!this.getCurrentPlayer().isHumanPlayer())
+            this.moveService.restart();
         turnSeconds = Settings.SECONDS_PER_TURN;
         timerLabel.setText(String.valueOf(turnSeconds));
-
-
-        //getCurrentPlayer().toggleBorder();
     }
 
     public Player getCurrentPlayer()
@@ -140,27 +146,32 @@ public class GameHandler {
         return players;
     }
 
-    public boolean isSafePosition(int cellX, int cellY)
+    public boolean isSafePosition(Pawn currentPawn,int cellX, int cellY)
     {
-        if(this.turn >= 0)
-        for(Player player : players)
-            if(player != null)
-            for (Pawn pawn : player.pawns())
-                if(pawn.getX() == cellX && pawn.getY() == cellY)
-                    return false;
-
+        if(this.isGameStarted()) {
+            for (Player player : players)
+                if (player != null)
+                    for (Pawn pawn : player.pawns())
+                        if (pawn.getX() == cellX && pawn.getY() == cellY)
+                            return false;
+            if(Math.pow(currentPawn.getX() - cellX,2) > 1 || Math.pow(currentPawn.getY() - cellY,2) > 1)
+                return false;
+        }
         if(cellX < 0 || cellX >= 10 ||  cellY < 0 || cellY >= 10)
             return false;
+
 
         return this.gamePanel.getTile(cellX, cellY).getLevel() < 4;
     }
 
     private void initGameBoard()
     {
+        this.humanMovePhase = HumanMovePhase.PAWN;
         this.turn = -1;
         this.getMyGamePanel().clearGamePanel();
-        this.players[0] = new Player(createPawns(0), Settings.FIRST_PLAYER);
-        this.players[1] = new Player(createPawns(1),Settings.SECOND_PLAYER);
+        this.getMyGamePanel().getChildren().add(timerLabel);
+        this.players[0] = new Player("Player1",createPawns(0), Settings.FIRST_PLAYER);
+        this.players[1] = new Player("Player2",createPawns(1),Settings.SECOND_PLAYER);
         this.nextTurn();
     }
 
@@ -171,7 +182,7 @@ public class GameHandler {
             Stage stage = new Stage();
             stage.setTitle("FINE PARTITA");
             gameTimer.stop();
-
+            this.turn = -1;
             Button button = new Button("click me");
             button.setOnMouseClicked(event ->
             {
@@ -182,6 +193,69 @@ public class GameHandler {
             Scene scenes = new Scene(button);
             stage.setScene(scenes);
             stage.show();
+        }
+    }
+
+    public boolean isGameStarted() {
+        return this.turn >= 0;
+    }
+
+    /**
+     * HUMAN MOVE SECTION
+     */
+
+    private HumanMovePhase humanMovePhase = HumanMovePhase.PAWN;
+    private Pawn selectedPawn;
+
+    public void onPawnClicked(Pawn pawn){
+
+        if(this.isGameStarted() && this.getCurrentPlayer().isHumanPlayer() && this.humanMovePhase == HumanMovePhase.PAWN)
+        {
+            //with this you can only select the current player pawn
+            if(this.players[pawn.getPlayer()] == getCurrentPlayer()) {
+                this.selectedPawn = pawn;
+                this.selectedPawn.toggleBorder();
+                humanMovePhase = humanMovePhase.nextPhase();
+            }
+        }
+    }
+
+    public void onTileClicked(Tile tile){
+        if(this.isGameStarted() && this.getCurrentPlayer().isHumanPlayer())
+        {
+
+            if(humanMovePhase == HumanMovePhase.MOVE) {
+                if(this.selectedPawn.move(tile.getPosX() - selectedPawn.getX(), tile.getPosY() - selectedPawn.getY())) {
+                    checkForVictory(selectedPawn);
+                    humanMovePhase = humanMovePhase.nextPhase();
+                }
+            }
+            else if(humanMovePhase == HumanMovePhase.LEVEL)
+            {
+                if(this.updateTile(selectedPawn,tile.getPosX(),tile.getPosY())) {
+                    humanMovePhase = humanMovePhase.nextPhase();
+                    this.selectedPawn.toggleBorder();
+                    this.nextTurn();
+                }
+            }
+        }
+    }
+
+    enum HumanMovePhase
+    {
+        PAWN,
+        MOVE,
+        LEVEL;
+
+        public HumanMovePhase nextPhase()
+        {
+            switch (this)
+            {
+                case PAWN -> {return MOVE;}
+                case MOVE -> {return LEVEL;}
+                case LEVEL -> {return PAWN;}
+            }
+            return null;
         }
     }
 

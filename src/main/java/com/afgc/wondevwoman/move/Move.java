@@ -71,4 +71,16 @@ public class Move {
     public void setPlaceY(int placeY) {
         this.placeY = placeY;
     }
+
+
+    @Override
+    public String toString() {
+        return "Move{" +
+                "pawn=" + pawn +
+                ", dirX=" + dirX +
+                ", dirY=" + dirY +
+                ", placeX=" + placeX +
+                ", placeY=" + placeY +
+                '}';
+    }
 }

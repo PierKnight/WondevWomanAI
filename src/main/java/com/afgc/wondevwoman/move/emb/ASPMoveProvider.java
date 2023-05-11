@@ -9,12 +9,9 @@ import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.Player;
 import it.unical.mat.embasp.base.Handler;
 import it.unical.mat.embasp.base.Output;
-import it.unical.mat.embasp.languages.asp.ASPMapper;
 import it.unical.mat.embasp.languages.asp.AnswerSet;
 import it.unical.mat.embasp.languages.asp.AnswerSets;
 
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ASPMoveProvider implements MoveProvider {
@@ -68,6 +65,6 @@ public class ASPMoveProvider implements MoveProvider {
         {
             exception.printStackTrace();
         }
-        return new Move(1,1,0,8,8);
+        return null;
     }
 }

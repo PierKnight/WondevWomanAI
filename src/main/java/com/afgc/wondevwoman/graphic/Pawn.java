@@ -1,16 +1,9 @@
 package com.afgc.wondevwoman.graphic;
 
 import com.afgc.wondevwoman.GameHandler;
-import com.afgc.wondevwoman.Main;
 import com.afgc.wondevwoman.Settings;
-import it.unical.mat.embasp.languages.Id;
-import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Transition;
-import javafx.animation.TranslateTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -18,6 +11,7 @@ public class Pawn extends StackPane {
 
     private int x;
     private int y;
+    private final int player;
     private final int pawnNumber;
 
 
@@ -29,19 +23,20 @@ public class Pawn extends StackPane {
 
     private final RenderTransition transition = new RenderTransition();
 
-    public Pawn(GameHandler gameHandler, int team,int pawnNumber)
+    public Pawn(GameHandler gameHandler, int player,int pawnNumber)
     {
         this.gameHandler = gameHandler;
         this.pawnNumber = pawnNumber;
-        ImageView imageView = new ImageView(ImageManager.players[team]);
+        this.player = player;
+        ImageView imageView = new ImageView(ImageManager.players[player]);
 
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
 
         border = new ImageView(ImageManager.border);
 
-        border.fitWidthProperty().bind(this.prefWidthProperty());
-        border.fitHeightProperty().bind(this.prefHeightProperty());
+        border.fitWidthProperty().bind(this.widthProperty());
+        border.fitHeightProperty().bind(this.widthProperty());
 
         this.getChildren().addAll(imageView, border);
         this.toggleBorder(); // rendo invisibile il bordo all'inizio del gioco
@@ -51,6 +46,7 @@ public class Pawn extends StackPane {
             Pawn.this.setTranslateX(renderX * newValue.doubleValue() / Settings.TILES);
             Pawn.this.setTranslateY(renderY * newValue.doubleValue() / Settings.TILES);
         });
+        this.setOnMouseClicked(event -> GameHandler.getInstance().onPawnClicked(Pawn.this));
 
     }
 
@@ -60,7 +56,7 @@ public class Pawn extends StackPane {
 
     public boolean move(int dirX,int dirY)
     {
-        if(!gameHandler.isSafePosition(x + dirX,y + dirY))
+        if(!gameHandler.isSafePosition(this,x + dirX,y + dirY))
             return false;
 
 
@@ -101,8 +97,12 @@ public class Pawn extends StackPane {
 
     public String getFact(boolean isEnemy)
     {
-        String teamFact = isEnemy ? "you" : "enemy";
+        String teamFact = isEnemy ? "team" : "enemy";
         return "pawn(" + this.x + "," + this.y + "," + this.pawnNumber + "," + teamFact + ").";
+    }
+
+    public int getPlayer() {
+        return player;
     }
 
     private class RenderTransition extends Transition

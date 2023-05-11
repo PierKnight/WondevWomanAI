@@ -28,8 +28,6 @@ public class GamePanel extends StackPane {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 Tile tile = new Tile(i,j);
-                //tile.setTranslateX(i * tileSize);
-                //tile.setTranslateY(j * tileSize);
                 tile.translateXProperty().bind(binding.multiply(i));
                 tile.translateYProperty().bind(binding.multiply(j));
                 tile.fitWidthProperty().bind(binding);

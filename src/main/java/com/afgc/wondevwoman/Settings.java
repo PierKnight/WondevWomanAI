@@ -2,9 +2,7 @@ package com.afgc.wondevwoman;
 
 import com.afgc.wondevwoman.asp.EmbASPHandler;
 import com.afgc.wondevwoman.move.MoveProvider;
-import com.afgc.wondevwoman.move.RandomMoveProvider;
 import com.afgc.wondevwoman.move.emb.ASPMoveProvider;
-import it.unical.mat.embasp.base.Handler;
 
 public class Settings {
     public static final int WIDTH = 50;
@@ -29,6 +27,6 @@ public class Settings {
     /**
      * qui si può decidere che comportamento affidare al secondo plauer per scegliere la mossa
      */
-    public static final MoveProvider SECOND_PLAYER = new RandomMoveProvider();
+    public static final MoveProvider SECOND_PLAYER = null;
 
 }
