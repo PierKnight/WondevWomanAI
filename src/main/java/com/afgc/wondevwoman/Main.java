@@ -1,16 +1,9 @@
 package com.afgc.wondevwoman;
 
-import it.unical.mat.embasp.base.Handler;
-import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
-import it.unical.mat.embasp.platforms.desktop.DesktopService;
-import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Main extends Application {
 
