@@ -64,7 +64,7 @@ public class GameHandler {
             }
             Pawn selectedPawn = getCurrentPlayer().pawns()[moveResult.getPawn()];
 
-            if(selectedPawn.move(moveResult.getDirX(),moveResult.getDirY())) {
+            if(selectedPawn.move(moveResult.getMoveX(),moveResult.getMoveY())) {
                 if(this.updateTile(selectedPawn,moveResult.getPlaceX(), moveResult.getPlaceY()))
                     nextTurn();
             }
@@ -225,7 +225,7 @@ public class GameHandler {
         {
 
             if(humanMovePhase == HumanMovePhase.MOVE) {
-                if(this.selectedPawn.move(tile.getPosX() - selectedPawn.getX(), tile.getPosY() - selectedPawn.getY())) {
+                if(this.selectedPawn.move(tile.getPosX(), tile.getPosY())) {
                     checkForVictory(selectedPawn);
                     humanMovePhase = humanMovePhase.nextPhase();
                 }

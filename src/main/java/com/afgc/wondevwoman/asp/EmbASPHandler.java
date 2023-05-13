@@ -20,7 +20,7 @@ public final class EmbASPHandler {
 
     public InputProgram variableProgram = new ASPInputProgram();
 
-    public DesktopHandler FRANCPIER = registerEMBAspHandler("fraaaaaa.txt");
+    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/level1.txt");
     public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/stupidbot.txt");
 
     private EmbASPHandler(){

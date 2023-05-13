@@ -11,10 +11,10 @@ public class Move {
     int pawn;
 
     @Param(1)
-    int dirX;
+    int moveX;
 
     @Param(2)
-    int dirY;
+    int moveY;
 
     @Param(3)
     int placeX;
@@ -24,10 +24,10 @@ public class Move {
 
     public Move(){}
 
-    public Move(int pawn, int dirX, int dirY, int placeX, int placeY) {
+    public Move(int pawn, int dirX, int moveY, int placeX, int placeY) {
         this.pawn = pawn;
-        this.dirX = dirX;
-        this.dirY = dirY;
+        this.moveX = dirX;
+        this.moveY = moveY;
         this.placeX = placeX;
         this.placeY = placeY;
     }
@@ -40,20 +40,20 @@ public class Move {
         this.pawn = pawn;
     }
 
-    public int getDirX() {
-        return dirX;
+    public int getMoveX() {
+        return moveX;
     }
 
-    public void setDirX(int dirX) {
-        this.dirX = dirX;
+    public void setMoveX(int moveX) {
+        this.moveX = moveX;
     }
 
-    public int getDirY() {
-        return dirY;
+    public int getMoveY() {
+        return moveY;
     }
 
-    public void setDirY(int dirY) {
-        this.dirY = dirY;
+    public void setMoveY(int moveY) {
+        this.moveY = moveY;
     }
 
     public int getPlaceX() {
@@ -77,8 +77,8 @@ public class Move {
     public String toString() {
         return "Move{" +
                 "pawn=" + pawn +
-                ", dirX=" + dirX +
-                ", dirY=" + dirY +
+                ", dirX=" + moveX +
+                ", dirY=" + moveY +
                 ", placeX=" + placeX +
                 ", placeY=" + placeY +
                 '}';

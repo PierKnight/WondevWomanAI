@@ -54,26 +54,26 @@ public class Pawn extends StackPane {
         border.setVisible(!border.isVisible());
     }
 
-    public boolean move(int dirX,int dirY)
+    public boolean move(int x,int y)
     {
-        if(!gameHandler.isSafePosition(this,x + dirX,y + dirY))
+        if(!gameHandler.isSafePosition(this,x,y))
             return false;
 
 
         int currentLevel = gameHandler.getMyGamePanel().tiles[x][y].getLevel();
-        int nextLevel = gameHandler.getMyGamePanel().tiles[x + dirX][y + dirY].getLevel();
+        int nextLevel = gameHandler.getMyGamePanel().tiles[x][y].getLevel();
         if(nextLevel - currentLevel > 1)
             return false;
 
-        transition.fromX = x;
-        transition.fromY = y;
+        transition.fromX = this.x;
+        transition.fromY = this.y;
 
-        transition.toX = (x + dirX);
-        transition.toY =  (y + dirY);
+        transition.toX = x;
+        transition.toY = y;
         transition.playFromStart();
 
-        x += dirX;
-        y += dirY;
+        this.x = x;
+        this.y = y;
 
         return true;
     }

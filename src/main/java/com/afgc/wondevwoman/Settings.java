@@ -22,7 +22,7 @@ public class Settings {
      */
 
     //TODO se il move provider è null, allora la mossa è data da un giocatore umano
-    public static final MoveProvider FIRST_PLAYER = new ASPMoveProvider(() -> EmbASPHandler.getInstance().EMJACOPO);
+    public static final MoveProvider FIRST_PLAYER = new ASPMoveProvider(() -> EmbASPHandler.getInstance().FRANCPIER);
 
     /**
      * qui si può decidere che comportamento affidare al secondo plauer per scegliere la mossa
