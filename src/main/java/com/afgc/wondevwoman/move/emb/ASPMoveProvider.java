@@ -32,7 +32,7 @@ public class ASPMoveProvider implements MoveProvider {
             //add pawns
             for (Player player : Main.GAME_HANDLER.getPlayers()) {
                 for (Pawn pawn : player.pawns()) {
-                    String pawnFact = pawn.getFact(player == currentPlayer);
+                    String pawnFact = pawn.getFact(player != currentPlayer);
                     EmbASPHandler.getInstance().variableProgram.addProgram(pawnFact);
                 }
             }
