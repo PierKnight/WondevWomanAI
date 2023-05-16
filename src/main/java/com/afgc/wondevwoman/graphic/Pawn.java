@@ -97,7 +97,7 @@ public class Pawn extends StackPane {
 
     public String getFact(boolean isEnemy)
     {
-        String teamFact = isEnemy ? "team" : "enemy";
+        String teamFact = isEnemy ? "enemy" : "team";
         return "pawn(" + this.x + "," + this.y + "," + this.pawnNumber + "," + teamFact + ").";
     }
 
