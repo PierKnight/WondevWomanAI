@@ -8,7 +8,7 @@ public class Settings {
     public static final int WIDTH = 50;
     public static final int HEIGHT = 50;
 
-    public static final int TILES = 10;
+    public static final int TILES = 5;
 
     /**
      * se true significa che quando un {@link MoveProvider} prova a fare una mossa illegale il turno passa all'avversario

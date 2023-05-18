@@ -1,5 +1,6 @@
 package com.afgc.wondevwoman.asp;
 
+import com.afgc.wondevwoman.Settings;
 import com.afgc.wondevwoman.graphic.Tile;
 import com.afgc.wondevwoman.move.Move;
 import it.unical.mat.embasp.base.InputProgram;
@@ -20,7 +21,7 @@ public final class EmbASPHandler {
 
     public InputProgram variableProgram = new ASPInputProgram();
 
-    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/level1.txt");
+    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/level2.asp");
     public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/stupidbot.txt");
 
     private EmbASPHandler(){
@@ -42,6 +43,7 @@ public final class EmbASPHandler {
     {
         InputProgram inputProgram = new ASPInputProgram();
         inputProgram.addFilesPath(ruleFile);
+        inputProgram.addProgram("size(" + Settings.TILES + ").");
 
         DesktopHandler desktopHandler = new DesktopHandler(DESKTOP_SERVICE);
         desktopHandler.addProgram(variableProgram);

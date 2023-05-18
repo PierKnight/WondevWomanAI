@@ -60,7 +60,7 @@ public class Pawn extends StackPane {
             return false;
 
 
-        int currentLevel = gameHandler.getMyGamePanel().tiles[x][y].getLevel();
+        int currentLevel = gameHandler.getMyGamePanel().tiles[this.x][this.y].getLevel();
         int nextLevel = gameHandler.getMyGamePanel().tiles[x][y].getLevel();
         if(nextLevel - currentLevel > 1)
             return false;
@@ -74,6 +74,8 @@ public class Pawn extends StackPane {
 
         this.x = x;
         this.y = y;
+
+        this.gameHandler.checkForVictory(this);
 
         return true;
     }

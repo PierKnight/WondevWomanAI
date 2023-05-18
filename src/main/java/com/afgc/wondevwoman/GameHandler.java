@@ -104,7 +104,7 @@ public class GameHandler {
         Pawn[] pawns = new Pawn[2];
         for (int i = 0; i < pawns.length; i++) {
             pawns[i] = new Pawn(this, player,i);
-            pawns[i].move(i * 9, player * 9);
+            pawns[i].move(i * (Settings.TILES - 1), player * (Settings.TILES - 1));
 
             DoubleBinding binding = this.getMyGamePanel().widthProperty().divide(Settings.TILES);
 
@@ -175,7 +175,7 @@ public class GameHandler {
         this.nextTurn();
     }
 
-    private void checkForVictory(Pawn pawn)
+    public void checkForVictory(Pawn pawn)
     {
         if(this.getMyGamePanel().tiles[pawn.getX()][pawn.getY()].getLevel() == 3)
         {
@@ -226,7 +226,6 @@ public class GameHandler {
 
             if(humanMovePhase == HumanMovePhase.MOVE) {
                 if(this.selectedPawn.move(tile.getPosX(), tile.getPosY())) {
-                    checkForVictory(selectedPawn);
                     humanMovePhase = humanMovePhase.nextPhase();
                 }
             }

@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane;
 // todo: singleton (?)
 public class GamePanel extends StackPane {
 
-    public final Tile[][] tiles = new Tile[10][10];
+    public final Tile[][] tiles = new Tile[Settings.TILES][Settings.TILES];
 
     public GamePanel() {
         this.setAlignment(Pos.TOP_LEFT);
@@ -25,8 +25,8 @@ public class GamePanel extends StackPane {
         DoubleBinding binding = this.widthProperty().divide(Settings.TILES);
 
         this.getChildren().clear();
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < Settings.TILES; i++) {
+            for (int j = 0; j < Settings.TILES; j++) {
                 Tile tile = new Tile(i,j);
                 tile.translateXProperty().bind(binding.multiply(i));
                 tile.translateYProperty().bind(binding.multiply(j));
