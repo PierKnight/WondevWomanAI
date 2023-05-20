@@ -54,7 +54,7 @@ public class ASPMoveProvider implements MoveProvider {
     public Move getMoveFromAnswerSets(AnswerSets answerSets)
     {
         try {
-            for (AnswerSet answerSet : answerSets.getAnswersets()) {
+            for (AnswerSet answerSet : answerSets.getOptimalAnswerSets()) {
                 for (Object atom : answerSet.getAtoms()) {
                     if(atom instanceof Move move)
                         return move;
