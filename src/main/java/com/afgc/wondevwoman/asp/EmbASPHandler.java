@@ -12,6 +12,8 @@ import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
 import it.unical.mat.embasp.platforms.desktop.DesktopService;
 import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
 
+import java.util.function.Consumer;
+
 public final class EmbASPHandler {
 
 
@@ -21,8 +23,11 @@ public final class EmbASPHandler {
 
     public InputProgram variableProgram = new ASPInputProgram();
 
-    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/level2.asp");
-    public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/stupidbot.txt");
+
+    private final Consumer<InputProgram> vicineFatto = inputProgram -> inputProgram.addFilesPath("encodings/vicino.asp");
+
+    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/level_turns.asp", vicineFatto);
+    public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/stupidbot.txt", null);
 
     private EmbASPHandler(){
 
@@ -39,11 +44,16 @@ public final class EmbASPHandler {
         return INSTANCE;
     }
 
-    public DesktopHandler registerEMBAspHandler(String ruleFile)
+    public DesktopHandler registerEMBAspHandler(String ruleFile, Consumer<InputProgram> additionalStaticFacts)
     {
         InputProgram inputProgram = new ASPInputProgram();
         inputProgram.addFilesPath(ruleFile);
+
+        //pass the grid size as a fact
         inputProgram.addProgram("size(" + Settings.TILES + ").");
+
+        if(additionalStaticFacts != null)
+            additionalStaticFacts.accept(inputProgram);
 
         DesktopHandler desktopHandler = new DesktopHandler(DESKTOP_SERVICE);
         desktopHandler.addProgram(variableProgram);

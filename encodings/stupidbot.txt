@@ -1,7 +1,0 @@
-
-newPos(0,1) | newPos(1,0).
-
-move(0,X,Y,NX,NY) :- NX = PX + X + 1,NY = PY + Y,pawn(PX,PY,0,team),newPos(X,Y).
-
-
-

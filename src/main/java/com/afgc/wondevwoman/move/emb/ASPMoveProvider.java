@@ -8,6 +8,7 @@ import com.afgc.wondevwoman.move.Move;
 import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.Player;
 import it.unical.mat.embasp.base.Handler;
+import it.unical.mat.embasp.base.InputProgram;
 import it.unical.mat.embasp.base.Output;
 import it.unical.mat.embasp.languages.asp.AnswerSet;
 import it.unical.mat.embasp.languages.asp.AnswerSets;
@@ -29,16 +30,7 @@ public class ASPMoveProvider implements MoveProvider {
         try {
             //inserire fatti
             EmbASPHandler.getInstance().variableProgram.clearAll();
-            //add pawns
-            for (Player player : Main.GAME_HANDLER.getPlayers()) {
-                for (Pawn pawn : player.pawns()) {
-                    String pawnFact = pawn.getFact(player != currentPlayer);
-                    EmbASPHandler.getInstance().variableProgram.addProgram(pawnFact);
-                }
-            }
-            for (Tile[] rowTiles : Main.GAME_HANDLER.getMyGamePanel().tiles)
-                for (Tile tile : rowTiles)
-                        EmbASPHandler.getInstance().variableProgram.addObjectInput(tile);
+            this.addFacts(EmbASPHandler.getInstance().variableProgram,currentPlayer);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,5 +58,19 @@ public class ASPMoveProvider implements MoveProvider {
             exception.printStackTrace();
         }
         return null;
+    }
+
+    protected void addFacts(InputProgram variableInput,Player currentPlayer) throws Exception
+    {
+        //add pawns
+        for (Player player : Main.GAME_HANDLER.getPlayers()) {
+            for (Pawn pawn : player.pawns()) {
+                String pawnFact = pawn.getFact(player != currentPlayer);
+                variableInput.addProgram(pawnFact);
+            }
+        }
+        for (Tile[] rowTiles : Main.GAME_HANDLER.getMyGamePanel().tiles)
+            for (Tile tile : rowTiles)
+                variableInput.addObjectInput(tile);
     }
 }
