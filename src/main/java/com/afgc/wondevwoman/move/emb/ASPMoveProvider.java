@@ -64,7 +64,7 @@ public class ASPMoveProvider implements MoveProvider {
     {
         //add pawns
         for (Player player : Main.GAME_HANDLER.getPlayers()) {
-            for (Pawn pawn : player.pawns()) {
+            for (Pawn pawn : player.getPawns()) {
                 String pawnFact = pawn.getFact(player != currentPlayer);
                 variableInput.addProgram(pawnFact);
             }

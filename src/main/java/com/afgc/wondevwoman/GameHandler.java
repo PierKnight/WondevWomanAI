@@ -45,7 +45,7 @@ public class GameHandler {
                 @Override
                 protected Move call() throws Exception {
                     //here this service will wait for a move given a generic player
-                    return player.moveProvider().getMove(player);
+                    return player.getMoveProvider().getMove(player);
                 }
             };
         }
@@ -62,18 +62,18 @@ public class GameHandler {
                 this.nextTurn();
                 return;
             }
-            Pawn selectedPawn = getCurrentPlayer().pawns()[moveResult.getPawn()];
+            Pawn selectedPawn = getCurrentPlayer().getPawns()[moveResult.getPawn()];
 
             if(selectedPawn.move(moveResult.getMoveX(),moveResult.getMoveY())) {
                 if(this.updateTile(selectedPawn,moveResult.getPlaceX(), moveResult.getPlaceY()))
                     nextTurn();
             }
             else if(!Settings.SKIP_TURN_WITH_ILLEGAL_MOVE){
-                System.out.println("YOU CANNOT DO THIS MOVE!" + getCurrentPlayer().name());
+                System.out.println("YOU CANNOT DO THIS MOVE!" + getCurrentPlayer().getName());
                 this.moveService.restart();
             }
             else {
-                System.out.println("ILLEGAL MOVE " + moveResult + " BY " + getCurrentPlayer().name() + ", SKIPPING TURN");
+                System.out.println("ILLEGAL MOVE " + moveResult + " BY " + getCurrentPlayer().getName() + ", SKIPPING TURN");
                 nextTurn();
             }
         });
@@ -146,20 +146,20 @@ public class GameHandler {
         return players;
     }
 
-    public boolean isSafePosition(Pawn currentPawn,int cellX, int cellY)
+    public boolean isSafePosition(Pawn currentPawn, int cellX, int cellY)
     {
+        if(cellX < 0 || cellX >= Settings.TILES ||  cellY < 0 || cellY >= Settings.TILES)
+            return false;
+
         if(this.isGameStarted()) {
             for (Player player : players)
                 if (player != null)
-                    for (Pawn pawn : player.pawns())
+                    for (Pawn pawn : player.getPawns())
                         if (pawn.getX() == cellX && pawn.getY() == cellY)
                             return false;
             if(Math.pow(currentPawn.getX() - cellX,2) > 1 || Math.pow(currentPawn.getY() - cellY,2) > 1)
                 return false;
         }
-        if(cellX < 0 || cellX >= 10 ||  cellY < 0 || cellY >= 10)
-            return false;
-
 
         return this.gamePanel.getTile(cellX, cellY).getLevel() < 4;
     }
@@ -170,30 +170,77 @@ public class GameHandler {
         this.turn = -1;
         this.getMyGamePanel().clearGamePanel();
         this.getMyGamePanel().getChildren().add(timerLabel);
-        this.players[0] = new Player("Player1",createPawns(0), Settings.FIRST_PLAYER);
-        this.players[1] = new Player("Player2",createPawns(1),Settings.SECOND_PLAYER);
+        this.players[0] = new Player("Player1",createPawns(0), Settings.FIRST_PLAYER, 0);
+        this.players[1] = new Player("Player2",createPawns(1),Settings.SECOND_PLAYER, 0);
+        /*this.players[0].pawns()[0].move(4,4);
+        this.players[0].pawns()[1].move(5,5);
+        this.players[1].pawns()[0].move(4,5);
+        this.players[1].pawns()[1].move(5,4);*/
+
         this.nextTurn();
     }
 
-    public void checkForVictory(Pawn pawn)
+    public void checkForPoint(Pawn pawn)
     {
         if(this.getMyGamePanel().tiles[pawn.getX()][pawn.getY()].getLevel() == 3)
         {
-            Stage stage = new Stage();
-            stage.setTitle("FINE PARTITA");
-            gameTimer.stop();
-            this.turn = -1;
-            Button button = new Button("click me");
-            button.setOnMouseClicked(event ->
-            {
-                GameHandler.this.initGameBoard();
-                stage.close();
-            });
-
-            Scene scenes = new Scene(button);
-            stage.setScene(scenes);
-            stage.show();
+            players[pawn.getPlayer()].setPoints(players[pawn.getPlayer()].getPoints()+1);
+            System.out.println(players[pawn.getPlayer()].getName() + " has earned a point!");
+            System.out.println(players[pawn.getPlayer()].getName() + ": " + players[pawn.getPlayer()].getPoints());
         }
+
+    }
+
+    public void checkForVictory()
+    {
+        int [] pawnBlocked = new int[2];
+
+        for(int i = 0; i < 2; i++) {
+            for(Pawn pawn: players[i].getPawns())
+                if(isPawnBlocked(pawn))
+                    pawnBlocked[i]++;
+        }
+
+        if(pawnBlocked[0] < 2 && pawnBlocked[1] < 2)
+            return;
+
+        System.out.println(players[0].getName() + ": " + players[0].getPoints());
+        System.out.println(players[0].getName() + ": " + players[0].getPoints());
+
+        if(players[0].getPoints() > players[1].getPoints())
+            System.out.println(players[0].getName() + " won!");
+
+        else if(players[0].getPoints() < players[1].getPoints())
+            System.out.println(players[1].getName() + " won!");
+
+        else System.out.println("Draw");
+
+        Stage stage = new Stage();
+        stage.setTitle("FINE PARTITA");
+        gameTimer.stop();
+        this.turn = -1;
+        Button button = new Button("click me");
+        button.setOnMouseClicked(event ->
+        {
+            GameHandler.this.initGameBoard();
+            stage.close();
+        });
+
+        Scene scenes = new Scene(button);
+        stage.setScene(scenes);
+        stage.show();
+    }
+
+    private boolean isPawnBlocked(Pawn pawn)
+    {
+        Tile currentTile = this.gamePanel.getTile(pawn.getX(), pawn.getY());
+
+        for(int i = -1; i <= 1; i++)
+            for(int j = -1; j <= 1; j++)
+                if((i != 0 || j != 0) && isSafePosition(pawn, pawn.getX()+i, pawn.getY()+j) &&
+                        (this.gamePanel.getTile(pawn.getX()+i, pawn.getY()+j).getLevel() <= currentTile.getLevel()+1))
+                    return false;
+        return true;
     }
 
     public boolean isGameStarted() {

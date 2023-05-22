@@ -75,7 +75,10 @@ public class Pawn extends StackPane {
         this.x = x;
         this.y = y;
 
-        this.gameHandler.checkForVictory(this);
+        if(gameHandler.isGameStarted()) {
+            this.gameHandler.checkForPoint(this);
+            this.gameHandler.checkForVictory();
+        }
 
         return true;
     }
