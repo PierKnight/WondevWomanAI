@@ -19,6 +19,8 @@ public class ImageManager {
 
     public static final Image border = loadImage("border.png");
 
+    public static final Image background = loadImage("background.jpg");
+
 
     public static Image loadImage(String fileName) {
         return new Image(ImageManager.class.getResource(fileName).toExternalForm(), true);
