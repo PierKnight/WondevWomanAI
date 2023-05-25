@@ -1,28 +1,22 @@
 package com.afgc.wondevwoman;
 
+import com.afgc.wondevwoman.controller.GameHandler;
+import com.afgc.wondevwoman.graphic.SceneHandler;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.util.Objects;
+
 public class Main extends Application {
 
-    private KeyEvent lastEvent;
 
-    public static final GameHandler GAME_HANDLER = GameHandler.getInstance();
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(GameHandler.getInstance().getMyGamePanel(), 320, 240);
-
-        stage.setTitle("WondevWoman");
-        stage.setScene(scene);
-        stage.setWidth(500);
-        stage.setHeight(530);
-        stage.setResizable(true);
-
-        stage.show();
-
-        GAME_HANDLER.getMyGamePanel().requestFocus();
+        SceneHandler.getInstance().init(stage);
     }
 
     public static void main(String[] args) {

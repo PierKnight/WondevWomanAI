@@ -1,6 +1,6 @@
 package com.afgc.wondevwoman.graphic;
 
-import com.afgc.wondevwoman.GameHandler;
+import com.afgc.wondevwoman.controller.GameHandler;
 import it.unical.mat.embasp.languages.Id;
 import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Interpolator;
@@ -74,5 +74,6 @@ public class Tile extends ImageView {
 
     public void setLevel(int level) {
         this.level = level;
+        this.setImage(ImageManager.tiles[this.level]);
     }
 }

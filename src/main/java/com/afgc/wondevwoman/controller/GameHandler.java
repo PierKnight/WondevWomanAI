@@ -1,9 +1,13 @@
-package com.afgc.wondevwoman;
+package com.afgc.wondevwoman.controller;
 
+import com.afgc.wondevwoman.Settings;
 import com.afgc.wondevwoman.graphic.GamePanel;
 import com.afgc.wondevwoman.graphic.Pawn;
+import com.afgc.wondevwoman.graphic.SceneHandler;
 import com.afgc.wondevwoman.graphic.Tile;
+import com.afgc.wondevwoman.move.GameStatus;
 import com.afgc.wondevwoman.move.Move;
+import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -34,7 +38,6 @@ public class GameHandler {
     private int turn = -1;
     private int turnSeconds;
     private final Timeline gameTimer;
-    private final Label timerLabel;
 
     private final Service<Move> moveService = new Service<>() {
         @Override
@@ -77,47 +80,47 @@ public class GameHandler {
                 nextTurn();
             }
         });
-        timerLabel = new Label();
-        timerLabel.setViewOrder(-1);
+
         gameTimer = new Timeline();
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(1), event -> {
                     turnSeconds--;
                     // update timerLabel
-                    timerLabel.setText(String.valueOf(turnSeconds));
+                    this.gamePanel.updateTime(this.turnSeconds);
                     if (turnSeconds <= 0) {
                         gameTimer.stop();
                         nextTurn();
                     }
                 }));
-        this.gamePanel.getChildren().add(timerLabel);
-        this.initGameBoard();
     }
 
     public GamePanel getMyGamePanel() {
         return this.gamePanel;
     }
 
-    private Pawn[] createPawns(int player)
+    private Pawn[] createPawns(int player, int[][] pawnPositions)
     {
         Pawn[] pawns = new Pawn[2];
         for (int i = 0; i < pawns.length; i++) {
             pawns[i] = new Pawn(this, player,i);
-            pawns[i].move(i * (Settings.TILES - 1), player * (Settings.TILES - 1));
+            pawns[i].move(pawnPositions[i][0],pawnPositions[i][1]);
 
-            DoubleBinding binding = this.getMyGamePanel().widthProperty().divide(Settings.TILES);
+            DoubleBinding binding = this.getMyGamePanel().getBoard().widthProperty().divide(Settings.TILES);
 
             pawns[i].minWidthProperty().bind(binding);
             pawns[i].maxWidthProperty().bind(binding);
             pawns[i].minHeightProperty().bind(binding);
             pawns[i].maxHeightProperty().bind(binding);
-            this.gamePanel.getChildren().add(pawns[i]);
+            this.gamePanel.getBoard().getChildren().add(pawns[i]);
         }
         return pawns;
     }
 
     public boolean updateTile(Pawn pawn,int x, int y) {
+        if(!this.isGameStarted())
+            return false;
+
         if(!this.isSafePosition(pawn,x,y))
             return false;
         this.gamePanel.getTile(x, y).levelUp();
@@ -126,15 +129,17 @@ public class GameHandler {
 
     private void nextTurn()
     {
-        //do random moves if human player didn't complete the turn in time
-        //if(this.humanMovePhase != HumanMovePhase.PAWN)
+
 
         turn += 1;
+        this.gamePanel.updateTurn(this.turn);
         gameTimer.playFromStart();
         if(!this.getCurrentPlayer().isHumanPlayer())
             this.moveService.restart();
         turnSeconds = Settings.SECONDS_PER_TURN;
-        timerLabel.setText(String.valueOf(turnSeconds));
+        this.gamePanel.updateTime(turnSeconds);
+
+
     }
 
     public Player getCurrentPlayer()
@@ -164,20 +169,17 @@ public class GameHandler {
         return this.gamePanel.getTile(cellX, cellY).getLevel() < 4;
     }
 
-    private void initGameBoard()
+    public GamePanel initGameBoard(GameStatus gameStatus, MoveProvider player1, MoveProvider player2)
     {
         this.humanMovePhase = HumanMovePhase.PAWN;
         this.turn = -1;
-        this.getMyGamePanel().clearGamePanel();
-        this.getMyGamePanel().getChildren().add(timerLabel);
-        this.players[0] = new Player("Player1",createPawns(0), Settings.FIRST_PLAYER, 0);
-        this.players[1] = new Player("Player2",createPawns(1),Settings.SECOND_PLAYER, 0);
-        /*this.players[0].pawns()[0].move(4,4);
-        this.players[0].pawns()[1].move(5,5);
-        this.players[1].pawns()[0].move(4,5);
-        this.players[1].pawns()[1].move(5,4);*/
-
+        this.getMyGamePanel().clearGamePanel(gameStatus.map());
+        this.players[0] = new Player("Player1",createPawns(0,gameStatus.player1Pawns()),player1,0);
+        this.players[1] = new Player("Player2",createPawns(1,gameStatus.player2Pawns()),player2,0);
         this.nextTurn();
+
+
+        return this.gamePanel;
     }
 
     public void checkForPoint(Pawn pawn)
@@ -185,6 +187,10 @@ public class GameHandler {
         if(this.getMyGamePanel().tiles[pawn.getX()][pawn.getY()].getLevel() == 3)
         {
             players[pawn.getPlayer()].setPoints(players[pawn.getPlayer()].getPoints()+1);
+            if(this.turn % 2 == 0)
+                this.gamePanel.updatePlayer1(players[pawn.getPlayer()].getPoints());
+            else
+                this.gamePanel.updatePlayer2(players[pawn.getPlayer()].getPoints());
             System.out.println(players[pawn.getPlayer()].getName() + " has earned a point!");
             System.out.println(players[pawn.getPlayer()].getName() + ": " + players[pawn.getPlayer()].getPoints());
         }
@@ -193,6 +199,7 @@ public class GameHandler {
 
     public void checkForVictory()
     {
+
         int [] pawnBlocked = new int[2];
 
         for(int i = 0; i < 2; i++) {
@@ -222,7 +229,7 @@ public class GameHandler {
         Button button = new Button("click me");
         button.setOnMouseClicked(event ->
         {
-            GameHandler.this.initGameBoard();
+            SceneHandler.getInstance().loadMenu();
             stage.close();
         });
 

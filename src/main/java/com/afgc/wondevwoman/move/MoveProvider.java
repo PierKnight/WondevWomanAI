@@ -11,4 +11,10 @@ public interface MoveProvider {
      * @return the move to make
      */
     Move getMove(Player player) throws InterruptedException;
+
+    /**
+     * @return the name of this provider
+     */
+    String getName();
+
 }

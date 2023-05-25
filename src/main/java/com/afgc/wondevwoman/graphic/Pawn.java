@@ -1,6 +1,6 @@
 package com.afgc.wondevwoman.graphic;
 
-import com.afgc.wondevwoman.GameHandler;
+import com.afgc.wondevwoman.controller.GameHandler;
 import com.afgc.wondevwoman.Settings;
 import javafx.animation.Transition;
 import javafx.scene.image.ImageView;
@@ -42,7 +42,7 @@ public class Pawn extends StackPane {
         this.toggleBorder(); // rendo invisibile il bordo all'inizio del gioco
 
         //aggiorno la posizione al variare della grandezza della board
-        gameHandler.getMyGamePanel().widthProperty().addListener((observable, oldValue, newValue) -> {
+        gameHandler.getMyGamePanel().getBoard().widthProperty().addListener((observable, oldValue, newValue) -> {
             Pawn.this.setTranslateX(renderX * newValue.doubleValue() / Settings.TILES);
             Pawn.this.setTranslateY(renderY * newValue.doubleValue() / Settings.TILES);
         });
@@ -127,8 +127,8 @@ public class Pawn extends StackPane {
         protected void interpolate(double frac) {
             Pawn.this.renderX = fromX * (1F - frac) + toX * frac;
             Pawn.this.renderY = fromY * (1F - frac) + toY * frac;
-            Pawn.this.setTranslateX(renderX * Pawn.this.gameHandler.getMyGamePanel().getWidth() / Settings.TILES);
-            Pawn.this.setTranslateY(renderY * Pawn.this.gameHandler.getMyGamePanel().getWidth() / Settings.TILES);
+            Pawn.this.setTranslateX(renderX * Pawn.this.gameHandler.getMyGamePanel().getBoard().getWidth() / Settings.TILES);
+            Pawn.this.setTranslateY(renderY * Pawn.this.gameHandler.getMyGamePanel().getBoard().getWidth() / Settings.TILES);
         }
     }
 }

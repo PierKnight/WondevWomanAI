@@ -12,4 +12,6 @@ module com.afgc.wondevwoman {
     opens com.afgc.wondevwoman.move to javafx.fxml;
     exports com.afgc.wondevwoman.move.emb;
     opens com.afgc.wondevwoman.move.emb to javafx.fxml;
+    exports com.afgc.wondevwoman.controller;
+    opens com.afgc.wondevwoman.controller to javafx.fxml;
 }
