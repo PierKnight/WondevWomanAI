@@ -39,6 +39,8 @@ public class GameHandler {
     private int turnSeconds;
     private final Timeline gameTimer;
 
+    private boolean versionePunti = false;
+
     private final Service<Move> moveService = new Service<>() {
         @Override
         protected Task<Move> createTask() {
@@ -129,7 +131,8 @@ public class GameHandler {
 
     private void nextTurn()
     {
-
+        if(this.checkForVictory())
+            return;
 
         turn += 1;
         this.gamePanel.updateTurn(this.turn);
@@ -197,19 +200,26 @@ public class GameHandler {
 
     }
 
-    public void checkForVictory()
+    public boolean checkForVictory()
     {
 
-        int [] pawnBlocked = new int[2];
+        if(versionePunti) {
+            int pawnBlocked = 0;
 
-        for(int i = 0; i < 2; i++) {
-            for(Pawn pawn: players[i].getPawns())
-                if(isPawnBlocked(pawn))
-                    pawnBlocked[i]++;
+            for(int i = 0; i < 2; i++) {
+                for(Pawn pawn: players[i].getPawns())
+                    if(isPawnBlocked(pawn))
+                        pawnBlocked++;
+            }
+
+            if(pawnBlocked < 4)
+                return false;
+        }
+        else {
+            if(!this.isGameStarted() || (this.getCurrentPlayer() != null && this.getCurrentPlayer().getPoints() == 0))
+                return false;
         }
 
-        if(pawnBlocked[0] < 2 && pawnBlocked[1] < 2)
-            return;
 
         System.out.println(players[0].getName() + ": " + players[0].getPoints());
         System.out.println(players[1].getName() + ": " + players[1].getPoints());
@@ -225,6 +235,7 @@ public class GameHandler {
         Stage stage = new Stage();
         stage.setTitle("FINE PARTITA");
         gameTimer.stop();
+        moveService.cancel();
         this.turn = -1;
         Button button = new Button("click me");
         button.setOnMouseClicked(event ->
@@ -236,6 +247,8 @@ public class GameHandler {
         Scene scenes = new Scene(button);
         stage.setScene(scenes);
         stage.show();
+
+        return true;
     }
 
     private boolean isPawnBlocked(Pawn pawn)

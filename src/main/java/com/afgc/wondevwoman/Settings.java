@@ -5,7 +5,7 @@ import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.emb.ASPMoveProvider;
 
 public class Settings {
-    public static final int TILES = 7;
+    public static final int TILES = 5;
     /**
      * se true significa che quando un {@link MoveProvider} prova a fare una mossa illegale il turno passa all'avversario
      */

@@ -14,6 +14,8 @@ import it.unical.mat.embasp.base.Output;
 import it.unical.mat.embasp.languages.asp.AnswerSet;
 import it.unical.mat.embasp.languages.asp.AnswerSets;
 
+import java.util.List;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class ASPMoveProvider implements MoveProvider {
@@ -29,7 +31,7 @@ public class ASPMoveProvider implements MoveProvider {
     }
 
     @Override
-    public final Move getMove(Player currentPlayer) {
+    public final Move getMove(Player currentPlayer) throws InterruptedException {
         try {
             //inserire fatti
             EmbASPHandler.getInstance().variableProgram.clearAll();
@@ -37,6 +39,7 @@ public class ASPMoveProvider implements MoveProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //Thread.sleep(500);
         Output output = this.handlerSupplier.get().startSync();
         AnswerSets answerSets = (AnswerSets) output;
         return getMoveFromAnswerSets(answerSets);
@@ -55,11 +58,13 @@ public class ASPMoveProvider implements MoveProvider {
     public Move getMoveFromAnswerSets(AnswerSets answerSets)
     {
         try {
-            for (AnswerSet answerSet : answerSets.getOptimalAnswerSets()) {
-                for (Object atom : answerSet.getAtoms()) {
-                    if(atom instanceof Move move)
-                        return move;
-                }
+            List<AnswerSet> answerSetList = answerSets.getOptimalAnswerSets();
+
+            int randomIndex = new Random().nextInt(answerSetList.size());
+
+            for (Object atom : answerSetList.get(randomIndex).getAtoms()) {
+                if(atom instanceof Move move)
+                    return move;
             }
         }
         catch (Exception exception)

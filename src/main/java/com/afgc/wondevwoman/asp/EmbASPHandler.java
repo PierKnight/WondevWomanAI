@@ -30,7 +30,7 @@ public final class EmbASPHandler {
     private final Consumer<InputProgram> vicineFatto = inputProgram -> inputProgram.addFilesPath("encodings/vicino.asp");
 
     public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/giocoPerFarePunti.asp", vicineFatto);
-    public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/stupidbot.txt", null);
+    public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/Emanuele-Jacopo.dlv", null);
 
     private EmbASPHandler(){
 
