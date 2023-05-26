@@ -36,6 +36,7 @@
             <ChoiceBox fx:id="map" prefWidth="150.0" />
          </children>
       </HBox>
+      <CheckBox fx:id="pointMode" text="Modalità punti" />
       <Button fx:id="playButton" mnemonicParsing="false" onAction="#onPlay" text="Gioca!" />
    </children>
    <padding>

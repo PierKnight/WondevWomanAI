@@ -172,13 +172,14 @@ public class GameHandler {
         return this.gamePanel.getTile(cellX, cellY).getLevel() < 4;
     }
 
-    public GamePanel initGameBoard(GameStatus gameStatus, MoveProvider player1, MoveProvider player2)
+    public GamePanel initGameBoard(boolean pointMode,GameStatus gameStatus, MoveProvider player1, MoveProvider player2)
     {
         this.humanMovePhase = HumanMovePhase.PAWN;
         this.turn = -1;
         this.getMyGamePanel().clearGamePanel(gameStatus.map());
         this.players[0] = new Player("Player1",createPawns(0,gameStatus.player1Pawns()),player1,0);
         this.players[1] = new Player("Player2",createPawns(1,gameStatus.player2Pawns()),player2,0);
+        this.versionePunti = pointMode;
         this.nextTurn();
 
 

@@ -10,6 +10,7 @@ import com.afgc.wondevwoman.move.MoveProvider;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +27,9 @@ public class MenuController {
 
     @FXML
     private ChoiceBox<GameStatus> map;
+
+    @FXML
+    private CheckBox pointMode;
 
 
 
@@ -65,7 +69,7 @@ public class MenuController {
 
 
 
-        GamePanel gamePanel = GameHandler.getInstance().initGameBoard(this.map.getValue(),player1.getValue(),player2.getValue());
+        GamePanel gamePanel = GameHandler.getInstance().initGameBoard(this.pointMode.isSelected(),this.map.getValue(),player1.getValue(),player2.getValue());
         gamePanel.requestFocus();
         SceneHandler.getInstance().loadGame(gamePanel);
     }
