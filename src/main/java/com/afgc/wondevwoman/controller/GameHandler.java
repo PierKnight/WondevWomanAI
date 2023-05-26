@@ -212,7 +212,7 @@ public class GameHandler {
             return;
 
         System.out.println(players[0].getName() + ": " + players[0].getPoints());
-        System.out.println(players[0].getName() + ": " + players[0].getPoints());
+        System.out.println(players[1].getName() + ": " + players[1].getPoints());
 
         if(players[0].getPoints() > players[1].getPoints())
             System.out.println(players[0].getName() + " won!");

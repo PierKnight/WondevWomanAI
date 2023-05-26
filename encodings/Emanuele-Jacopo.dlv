@@ -1,0 +1,189 @@
+% INPUT:
+% pawn(x, y, pawn_index, team | enemy)
+% tile(x, y, level)
+
+% regola di supporto
+tileLevel(L):- tile(_,_,L).
+
+% ------------------------------------------------------------------------
+% GUESS
+
+movePawn(Index, X, Y) | dontMovePawn(Index, X, Y):- pawn(X, Y, Index, team).
+
+% sposto in modo casuale la pedina scelta con la regola movePawn
+moveIn(Pawn, X-1, Y-1) | moveIn(Pawn, X-1, Y) | moveIn(Pawn, X-1, Y+1) | moveIn(Pawn, X, Y+1) | moveIn(Pawn, X+1, Y+1) | moveIn(Pawn, X+1, Y) | moveIn(Pawn, X+1, Y-1) | moveIn(Pawn, X, Y-1):- movePawn(Pawn, X, Y).
+
+% inserisco un nuovo livello in modo casuale su una cella vicina
+placeIn(X-1, Y-1) | placeIn(X-1, Y) | placeIn(X-1, Y+1) | placeIn(X, Y+1) | placeIn(X+1, Y+1) | placeIn(X+1, Y) | placeIn(X+1, Y-1) | placeIn(X, Y-1):- moveIn(_, X, Y).
+
+% ------------------------------------------------------------------------
+% CHECK
+
+% decido di spostare una sola pedina in modo casuale
+:- #count{I,X,Y: movePawn(I,X,Y)} != 1.
+
+% non posso spostare una pedina fuori dai bordi (cioè se non esiste una cella)
+existsTile(X, Y):- tile(X, Y, _).
+:- moveIn(_, X, Y), not existsTile(X, Y).
+
+% non posso spostare una pedina su una cella di livello 4
+:- moveIn(_, X, Y), tile(X, Y, 4).
+
+% non posso spostare una pedina su una cella di livello > livello della cella attuale + 1
+:- movePawn(Index, X, Y), tile(X, Y, L), moveIn(Index, X1, Y1), tile(X1, Y1, L1), L1 > L+1.
+
+% non posso incrementare una cella di livello 4
+:- placeIn(X, Y), tile(X, Y, 4).
+
+% non posso spostarmi su una cella già occupata da una pedina
+existsPawn(X, Y):- pawn(X, Y, _, _).
+:- moveIn(_, X, Y), existsPawn(X, Y).
+
+% non posso incrementare il livello di una cella che non esiste 
+:- placeIn(X, Y), not existsTile(X, Y).
+
+% non posso incrementare il livello di una cella già occupata da una pedina
+tileWithOtherPawn(X, Y):- dontMovePawn(_, X, Y).
+tileWithOtherPawn(X, Y):- pawn(X, Y, _, enemy).
+:- placeIn(X, Y), tileWithOtherPawn(X, Y).
+
+% se la pedina si trova su una cella di livello 2 e c'è almeno una cella vicina di livello 3, dovrò spostarmi assolutamente su una cella di livello 3 
+adjacentTileLevelBeforeMove(X, Y, X1, Y1, L):- movePawn(_, X, Y), tile(X1, Y1, L), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1.
+numAdjacentTilesLevelBeforeMove(X, Y, L, C):- #count{X1,Y1: adjacentTileLevelBeforeMove(X, Y, X1, Y1, L)} = C, tileLevel(L), movePawn(_, X, Y).
+:- numAdjacentTilesLevelBeforeMove(X, Y, 3, C), C > 0, movePawn(Index, X, Y), tile(X, Y, 2), moveIn(Index, X1, Y1), tile(X1, Y1, L), L!=3.
+
+% non posso incrementare una cella al livello 2 (liv 2->3) vicino alla quale c'è una pedina nemica su cella di livello 2
+:- placeIn(X, Y), tile(X, Y, 2), enemyNextToTile(X, Y).
+enemyNextToTile(X, Y):- pawn(X1, Y1, _, enemy), tile(X, Y, _), tile(X1, Y1, 2), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1. 
+
+% ------------------------------------------------------------------------
+% OPTIMIZE
+
+% pago se NON incremento una cella al livello 3 (liv 3->4) vicino alla quale c'è una pedina nemica su cella di livello 2
+:~ not placeIn(X, Y), tile(X, Y, 3), enemyNextToTile(X, Y). [4@4]
+
+% massimizzare il movimento su celle di livello 3
+:~ moveIn(_, X, Y), tile(X, Y, L). [3-L@3]
+
+% massimizzare la creazione di celle di livello 3
+:~ placeIn(X, Y), tile(X, Y, L). [3-L@3]
+
+% - minimizzare numero di celle adiacenti di livello 4
+% :~ moveIn(_, X, Y), numAdjacentTilesLevel(X, Y, C). [C@2]
+:~ moveIn(_, X, Y), adjacentTileLevelAfterMove(X, Y, _, _, 4). [1@2]
+
+% - massimizzare somma di livelli di celle adiacenti
+adjacentTileLevelAfterMove(X, Y, X1, Y1, L):- moveIn(_, X, Y), tile(X1, Y1, L), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1.
+sumAdjacentTileLevel(X, Y, C):- #sum{L1,X1,Y1: adjacentTileLevelAfterMove(X, Y, X1, Y1, L1), moveIn(_, X, Y)} = C, tile(X, Y, L), S=C-L.
+
+:~ moveIn(_, X, Y), sumAdjacentTileLevel(X, Y, Z). [32-Z@1]
+
+% ------------------------------------------------------------------------
+% OUTPUT: move(pawn_index, move_to_x, move_to_y, place_tile_in_x, place_tile_in_y)
+% Soluzione finale:
+move(Pawn, X, Y, X1, Y1):- moveIn(Pawn, X, Y), placeIn(X1, Y1).
+
+
+% pawn(1,2,1,team).
+% pawn(3,4,2,team).
+
+% tile(0, 0, 0).
+% tile(0, 1, 0).
+% tile(0, 2, 0).
+% tile(0, 3, 0).
+% tile(0, 4, 0).
+% tile(0, 5, 0).
+% tile(0, 6, 0).
+% tile(0, 7, 0).
+% tile(0, 8, 0).
+% tile(0, 9, 0).
+% tile(1, 0, 0).
+% tile(1, 1, 3).
+% tile(1, 2, 2).
+% tile(1, 3, 0).
+% tile(1, 4, 0).
+% tile(1, 5, 0).
+% tile(1, 6, 0).
+% tile(1, 7, 0).
+% tile(1, 8, 0).
+% tile(1, 9, 0).
+% tile(2, 0, 0).
+% tile(2, 1, 0).
+% tile(2, 2, 0).
+% tile(2, 3, 0).
+% tile(2, 4, 0).
+% tile(2, 5, 0).
+% tile(2, 6, 0).
+% tile(2, 7, 0).
+% tile(2, 8, 0).
+% tile(2, 9, 0).
+% tile(3, 0, 0).
+% tile(3, 1, 0).
+% tile(3, 2, 0).
+% tile(3, 3, 0).
+% tile(3, 4, 1).
+% tile(3, 5, 3).
+% tile(3, 6, 0).
+% tile(3, 7, 0).
+% tile(3, 8, 0).
+% tile(3, 9, 0).
+% tile(4, 0, 0).
+% tile(4, 1, 0).
+% tile(4, 2, 0).
+% tile(4, 3, 0).
+% tile(4, 4, 0).
+% tile(4, 5, 0).
+% tile(4, 6, 0).
+% tile(4, 7, 0).
+% tile(4, 8, 0).
+% tile(4, 9, 0).
+% tile(5, 0, 0).
+% tile(5, 1, 0).
+% tile(5, 2, 0).
+% tile(5, 3, 0).
+% tile(5, 4, 0).
+% tile(5, 5, 0).
+% tile(5, 6, 0).
+% tile(5, 7, 0).
+% tile(5, 8, 0).
+% tile(5, 9, 0).
+% tile(6, 0, 0).
+% tile(6, 1, 0).
+% tile(6, 2, 0).
+% tile(6, 3, 0).
+% tile(6, 4, 0).
+% tile(6, 5, 0).
+% tile(6, 6, 0).
+% tile(6, 7, 0).
+% tile(6, 8, 0).
+% tile(6, 9, 0).
+% tile(7, 0, 0).
+% tile(7, 1, 0).
+% tile(7, 2, 0).
+% tile(7, 3, 0).
+% tile(7, 4, 0).
+% tile(7, 5, 0).
+% tile(7, 6, 0).
+% tile(7, 7, 0).
+% tile(7, 8, 0).
+% tile(7, 9, 0).
+% tile(8, 0, 0).
+% tile(8, 1, 0).
+% tile(8, 2, 0).
+% tile(8, 3, 0).
+% tile(8, 4, 0).
+% tile(8, 5, 0).
+% tile(8, 6, 0).
+% tile(8, 7, 0).
+% tile(8, 8, 0).
+% tile(8, 9, 0).
+% tile(9, 0, 0).
+% tile(9, 1, 0).
+% tile(9, 2, 0).
+% tile(9, 3, 0).
+% tile(9, 4, 0).
+% tile(9, 5, 0).
+% tile(9, 6, 0).
+% tile(9, 7, 0).
+% tile(9, 8, 0).
+% tile(9, 9, 0).
