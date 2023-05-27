@@ -39,7 +39,7 @@ public class ASPMoveProvider implements MoveProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //Thread.sleep(500);
+        Thread.sleep(500);
         Output output = this.handlerSupplier.get().startSync();
         AnswerSets answerSets = (AnswerSets) output;
         return getMoveFromAnswerSets(answerSets);

@@ -34,6 +34,7 @@ public class MenuController {
 
 
     public void initialize() {
+
         for (MoveProvider provider : EmbASPHandler.getInstance().getProviders()) {
             player1.getItems().add(provider);
             player2.getItems().add(provider);
