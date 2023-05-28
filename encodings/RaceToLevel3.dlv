@@ -51,7 +51,7 @@ placeIn(X-1, Y-1) | placeIn(X-1, Y) | placeIn(X-1, Y+1) | placeIn(X, Y+1) | plac
 :~ moveIn(_, X, Y), tile(X, Y, L). [3-L@12, X,Y]
 
 % pago se incremento una cella di livello 2 al livello 3 (liv 2->3) vicino alla quale c'è una pedina nemica su cella di livello 2
-:~ placeIn(X, Y), tile(X, Y, 2), enemyNextToTile(X, Y, 2, L1), L1>=2. [1@9, X,Y]
+:~ placeIn(X, Y), tile(X, Y, 2), enemyNextToTile(X, Y, 2, L1), L1>=2. [1@11, X,Y]
 
 % pago se NON incremento una cella di livello 3 al livello 4 (liv 3->4) vicino alla quale c'è una pedina nemica su cella di livello 2
 :~ not placeIn(X, Y), tile(X, Y, 3), enemyNextToTile(X, Y, 3, L), L>=2. [1@10, X,Y]
