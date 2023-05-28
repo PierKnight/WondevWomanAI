@@ -14,10 +14,6 @@ import javafx.animation.Timeline;
 import javafx.beans.binding.DoubleBinding;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.concurrent.Executors;
@@ -38,7 +34,7 @@ public class GameHandler {
     private int turn = -1;
     private int turnSeconds;
     private final Timeline gameTimer;
-
+    private String winPlayer;
     private boolean versionePunti = false;
 
     private final Service<Move> moveService = new Service<>() {
@@ -57,6 +53,7 @@ public class GameHandler {
     };
 
     private GameHandler() {
+        winPlayer = "";
         this.moveService.setExecutor(Executors.newFixedThreadPool(1));
         this.moveService.setOnSucceeded(event -> {
             //if the player moved go to the next turn otherwise reset the service
@@ -154,6 +151,10 @@ public class GameHandler {
         return players;
     }
 
+    public String getWinPlayer() {
+        return winPlayer;
+    }
+
     public boolean isSafePosition(Pawn currentPawn, int cellX, int cellY)
     {
         if(cellX < 0 || cellX >= Settings.TILES ||  cellY < 0 || cellY >= Settings.TILES)
@@ -225,29 +226,26 @@ public class GameHandler {
         System.out.println(players[0].getName() + ": " + players[0].getPoints());
         System.out.println(players[1].getName() + ": " + players[1].getPoints());
 
-        if(players[0].getPoints() > players[1].getPoints())
+        if(players[0].getPoints() > players[1].getPoints()) {
+            winPlayer = "Vince il giocatore 1!";
             System.out.println(players[0].getName() + " won!");
+        }
 
-        else if(players[0].getPoints() < players[1].getPoints())
+        else if(players[0].getPoints() < players[1].getPoints()) {
+            winPlayer = "Vince il giocatore 2!";
             System.out.println(players[1].getName() + " won!");
+        }
 
-        else System.out.println("Draw");
+        else {
+            winPlayer = "Pareggio";
+            System.out.println("Draw");
+        }
 
-        Stage stage = new Stage();
-        stage.setTitle("FINE PARTITA");
+
         gameTimer.stop();
         moveService.cancel();
         this.turn = -1;
-        Button button = new Button("click me");
-        button.setOnMouseClicked(event ->
-        {
-            SceneHandler.getInstance().loadMenu();
-            stage.close();
-        });
-
-        Scene scenes = new Scene(button);
-        stage.setScene(scenes);
-        stage.show();
+        SceneHandler.getInstance().loadWinPanel();
 
         return true;
     }

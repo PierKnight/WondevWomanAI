@@ -29,11 +29,8 @@ public class MenuController {
 
 
 
-    public void initialize() {
-
-
-
-
+    public void initialize()
+    {
         this.updateMoveProviders(this.pointMode.isSelected());
 
         for (GameStatus gameMap : MapRegistry.getGameMaps())
@@ -67,9 +64,6 @@ public class MenuController {
     @FXML
     public void onPlay(ActionEvent event)
     {
-
-
-
         GamePanel gamePanel = GameHandler.getInstance().initGameBoard(this.pointMode.isSelected(),this.map.getValue(),player1.getValue(),player2.getValue());
         gamePanel.requestFocus();
         SceneHandler.getInstance().loadGame(gamePanel);

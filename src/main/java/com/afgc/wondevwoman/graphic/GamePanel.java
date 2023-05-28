@@ -55,8 +55,6 @@ public class GamePanel extends VBox {
 
         this.getChildren().add(scoreboard);
         this.getChildren().add(this.board);
-
-
     }
 
     public void clearGamePanel(int[][] tiles)

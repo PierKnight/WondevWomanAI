@@ -3,12 +3,9 @@ package com.afgc.wondevwoman.graphic;
 import com.afgc.wondevwoman.Main;
 import com.afgc.wondevwoman.controller.GameHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,7 +19,10 @@ public class SceneHandler {
     private SceneHandler(){}
 
     private Parent MENU = loadScene("menu.fxml");
+
     private AnchorPane mainNode;
+
+    private Stage winPanelStage;
 
 
     public static final GameHandler GAME_HANDLER = GameHandler.getInstance();
@@ -37,7 +37,8 @@ public class SceneHandler {
         try {
             return FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("graphic/fxml/" + file)));
         } catch (IOException e) {
-            System.out.println("FAILED TO LOAD NODE");
+            System.out.println("FAILED TO LOAD NODE: " + file);
+            e.printStackTrace();
         }
         return null;
     }
@@ -52,7 +53,6 @@ public class SceneHandler {
     {
         this.mainNode.getChildren().set(0,MENU);
     }
-
 
     public void init(Stage stage)
     {
@@ -73,9 +73,14 @@ public class SceneHandler {
     }
 
 
+    public void loadWinPanel() {
+        winPanelStage = new Stage();
+        winPanelStage.setTitle("FINE PARTITA");
+        winPanelStage.setScene(new Scene(loadScene("winPanel.fxml")));
+        winPanelStage.show();
+    }
 
-
-
-
-
+    public void closeWinPanel() {
+        winPanelStage.close();
+    }
 }
