@@ -1,6 +1,5 @@
 package com.afgc.wondevwoman.move.emb;
 
-import com.afgc.wondevwoman.Main;
 import com.afgc.wondevwoman.asp.EmbASPHandler;
 import com.afgc.wondevwoman.graphic.Pawn;
 import com.afgc.wondevwoman.graphic.SceneHandler;
@@ -15,7 +14,6 @@ import it.unical.mat.embasp.languages.asp.AnswerSet;
 import it.unical.mat.embasp.languages.asp.AnswerSets;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class ASPMoveProvider implements MoveProvider {
@@ -57,12 +55,12 @@ public class ASPMoveProvider implements MoveProvider {
      */
     public Move getMoveFromAnswerSets(AnswerSets answerSets)
     {
+
         try {
             List<AnswerSet> answerSetList = answerSets.getOptimalAnswerSets();
 
-            int randomIndex = new Random().nextInt(answerSetList.size());
 
-            for (Object atom : answerSetList.get(randomIndex).getAtoms()) {
+            for (Object atom : answerSetList.get(0).getAtoms()) {
                 if(atom instanceof Move move)
                     return move;
             }
