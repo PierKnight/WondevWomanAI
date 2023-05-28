@@ -13,9 +13,9 @@ import java.util.function.Supplier;
 
 public class ASMShortPathProvider extends ASPMoveProvider
 {
-    public ASMShortPathProvider(Supplier<Handler> handlerSupplier)
+    public ASMShortPathProvider(String name,Supplier<Handler> handlerSupplier)
     {
-        super("IA francesca",handlerSupplier);
+        super(name,handlerSupplier);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ASMShortPathProvider extends ASPMoveProvider
 
                 List<Node> path = aStar.findPath();
                 if(path.size() >= 2) {
-                    String shortPath = "nearMoveToPawn(" + i + "," + j + "," + path.get(1).getRow() + "," + path.get(1).getCol() + "," + path.size() + ").";
+                    String shortPath = "nearMoveToPawn(" + i + "," + j + "," + path.get(1).getRow() + "," + path.get(1).getCol() + "," + (path.size() - 1) + ").";
                     variableInput.addProgram(shortPath);
                 }
             }

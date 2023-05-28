@@ -26,10 +26,11 @@ public final class EmbASPHandler {
 
     public InputProgram variableProgram = new ASPInputProgram();
 
-
     private final Consumer<InputProgram> vicineFatto = inputProgram -> inputProgram.addFilesPath("encodings/vicino.asp");
 
-    public DesktopHandler FRANCPIER = registerEMBAspHandler("encodings/giocoPerFarePunti.asp", vicineFatto);
+    public DesktopHandler FRANCPIER_PUNTI = registerEMBAspHandler("encodings/giocoPerFarePunti.asp", vicineFatto);
+    public DesktopHandler FRANCPIER_NON_PUNTI = registerEMBAspHandler("encodings/giocoPerSalirePerPrimoV2.asp", vicineFatto);
+
     public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/Emanuele-Jacopo.dlv", null);
 
     private EmbASPHandler(){
@@ -65,12 +66,16 @@ public final class EmbASPHandler {
 
     }
 
-    public MoveProvider[] getProviders()
+    public MoveProvider[] getProviders(boolean isPointGame)
     {
+
         return new MoveProvider[]{
-                new ASMShortPathProvider(() -> FRANCPIER),
-                new ASPMoveProvider("IA jacopo", () -> EMJACOPO)
+                isPointGame ? new ASPMoveProvider("IA francesca-pierluigi punti",() ->FRANCPIER_PUNTI) :
+                        new ASMShortPathProvider("IA francesca-pierluigi non punti" ,() -> FRANCPIER_NON_PUNTI) ,
+                new ASPMoveProvider("IA jacopo-emanuele", () -> EMJACOPO)
         };
     }
+
+
 
 }
