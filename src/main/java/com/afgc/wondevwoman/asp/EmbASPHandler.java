@@ -5,6 +5,7 @@ import com.afgc.wondevwoman.graphic.Tile;
 import com.afgc.wondevwoman.move.Move;
 import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.emb.ASPMoveProvider;
+//import com.afgc.wondevwoman.move.emb.francescapier.ASMShortPathProvider;
 import com.afgc.wondevwoman.move.emb.francescapier.ASMShortPathProvider;
 import it.unical.mat.embasp.base.InputProgram;
 import it.unical.mat.embasp.languages.IllegalAnnotationException;
@@ -28,10 +29,11 @@ public final class EmbASPHandler {
 
     private final Consumer<InputProgram> vicineFatto = inputProgram -> inputProgram.addFilesPath("encodings/vicino.asp");
 
+    public DesktopHandler EMJACOPO_PUNTI = registerEMBAspHandler("encodings/RaceToPoints.dlv", null);
+    public DesktopHandler EMJACOPO_NON_PUNTI= registerEMBAspHandler("encodings/RaceToLevel3.dlv", null);
+
     public DesktopHandler FRANCPIER_PUNTI = registerEMBAspHandler("encodings/giocoPerFarePunti.asp", vicineFatto);
     public DesktopHandler FRANCPIER_NON_PUNTI = registerEMBAspHandler("encodings/giocoPerSalirePerPrimoV2.asp", vicineFatto);
-
-    public DesktopHandler EMJACOPO = registerEMBAspHandler("encodings/Emanuele-Jacopo.dlv", null);
 
     private EmbASPHandler(){
 
@@ -72,8 +74,8 @@ public final class EmbASPHandler {
         return new MoveProvider[]{
                 isPointGame ? new ASPMoveProvider("IA francesca-pierluigi punti",() ->FRANCPIER_PUNTI) :
                         new ASMShortPathProvider("IA francesca-pierluigi non punti" ,() -> FRANCPIER_NON_PUNTI) ,
-                new ASPMoveProvider("IA jacopo-emanuele", () -> EMJACOPO)
-        };
+                isPointGame ? new ASPMoveProvider("IA jacopo-emanuele punti",() ->EMJACOPO_PUNTI) :
+                        new ASMShortPathProvider("IA jacopo-emanuele non punti" ,() -> EMJACOPO_NON_PUNTI) ,        };
     }
 
 
