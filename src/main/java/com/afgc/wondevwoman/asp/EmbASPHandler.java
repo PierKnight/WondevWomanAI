@@ -32,8 +32,8 @@ public final class EmbASPHandler {
     public DesktopHandler EMJACOPO_PUNTI = registerEMBAspHandler("encodings/RaceToPoints.dlv", null);
     public DesktopHandler EMJACOPO_NON_PUNTI= registerEMBAspHandler("encodings/RaceToLevel3.dlv", null);
 
-    public DesktopHandler FRANCPIER_PUNTI = registerEMBAspHandler("encodings/giocoPerFarePunti.asp", vicineFatto);
-    public DesktopHandler FRANCPIER_NON_PUNTI = registerEMBAspHandler("encodings/giocoPerSalirePerPrimoV2.asp", vicineFatto);
+    public DesktopHandler FRANCPIER_PUNTI = registerEMBAspHandler("encodings/altimari-filice-punti.asp", vicineFatto);
+    public DesktopHandler FRANCPIER_NON_PUNTI = registerEMBAspHandler("encodings/altimari-filice-no-punti.asp", vicineFatto);
 
     private EmbASPHandler(){
 
