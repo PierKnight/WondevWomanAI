@@ -1,0 +1,162 @@
+% VERSIONE DELL'AI PER IL GIOCO A GARA PER LA CELLA DI LIVELLO 3
+
+% Fatti ricevuti in INPUT:
+
+% tile(X,Y,L). -> rappresenta ogni cella di coordinate X,Y e di livello L della griglia
+
+% pawn(X, Y, P, SIDE). -> rappresenta una pedina, in cui:
+%                         - X,Y sono le coordinate in cui la pedina è posizionata
+%                         - P indica il numero della pedina (0 o 1)
+%                         - SIDE indica se questa è una mia pedina (team) o del nemico (enemy)
+
+% Il programma restituisce in OUTPUT un predicato così composto:
+% move(P,MX,MY,UX,UY), in cui:
+% - P -> pedina che il giocatore corrente ha deciso di muovere (0 o 1)
+% - MX, MY -> coordinate X,Y in cui il giocatore corrente ha deciso di spostare la pedina P
+% - UX, UY -> coordinate X,Y della cella (tile) che il giocatore corrente ha deciso di aggiornare
+
+% ------------------------------------------------------------------------
+% GUESS
+
+% scelgo la pedina da muovere
+movePawn(Index, X, Y) | dontMovePawn(Index, X, Y):- pawn(X, Y, Index, team).
+
+% sposto la pedina scelta precedentemente in una delle direzioni possibili
+moveIn(Pawn, X-1, Y-1) | moveIn(Pawn, X-1, Y) | moveIn(Pawn, X-1, Y+1) | moveIn(Pawn, X, Y+1) | moveIn(Pawn, X+1, Y+1) | moveIn(Pawn, X+1, Y) | moveIn(Pawn, X+1, Y-1) | moveIn(Pawn, X, Y-1):- movePawn(Pawn, X, Y).
+
+% inserisco un nuovo livello su una cella vicina
+placeIn(X-1, Y-1) | placeIn(X-1, Y) | placeIn(X-1, Y+1) | placeIn(X, Y+1) | placeIn(X+1, Y+1) | placeIn(X+1, Y) | placeIn(X+1, Y-1) | placeIn(X, Y-1):- moveIn(_, X, Y).
+
+% ------------------------------------------------------------------------
+% CHECK
+
+% decido di spostare una sola pedina in modo casuale
+:- #count{I,X,Y: movePawn(I,X,Y)} != 1.
+
+% non posso spostare una pedina fuori dai bordi (cioè se non esiste una cella)
+:- moveIn(_, X, Y), not existsTile(X, Y).
+
+% non posso incrementare il livello di una cella che non esiste 
+:- placeIn(X, Y), not existsTile(X, Y).
+
+% non posso spostare una pedina su una cella di livello 4
+:- moveIn(_, X, Y), tile(X, Y, 4).
+
+% non posso spostare una pedina su una cella di livello > livello della cella attuale + 1
+:- movePawn(Index, X, Y), tile(X, Y, L), moveIn(Index, X1, Y1), tile(X1, Y1, L1), L1 > L+1.
+
+% non posso incrementare una cella di livello 4
+:- placeIn(X, Y), tile(X, Y, 4).
+
+% non posso spostarmi su una cella già occupata da una pedina
+:- moveIn(_, X, Y), existsPawn(X, Y).
+
+% non posso incrementare il livello di una cella già occupata da una pedina
+:- placeIn(X, Y), existsPawn(X, Y).
+
+% ------------------------------------------------------------------------
+% OPTIMIZE
+
+% HIGH PRIORITY: 
+
+% massimizzare il movimento su celle di livello 3
+:~ moveIn(_, X, Y), tile(X, Y, L). [3-L@12, X,Y]
+
+% pago se incremento una cella di livello 2 al livello 3 (liv 2->3) vicino alla quale c'è una pedina nemica su cella di livello 2
+:~ placeIn(X, Y), tile(X, Y, 2), enemyNextToTile(X, Y, 2, L1), L1>=2. [1@11, X,Y]
+
+% pago se NON incremento una cella di livello 3 al livello 4 (liv 3->4) vicino alla quale c'è una pedina nemica su cella di livello 2
+:~ not placeIn(X, Y), tile(X, Y, 3), enemyNextToTile(X, Y, 3, L), L>=2. [1@10, X,Y]
+
+% minimizzare il numero di celle adiacenti su cui la pedina non può spostarsi
+% si calcola il numero di celle adiacenti raggiungibili da (X,Y) in numAdjacentReachableTiles(X, Y, C).
+% In questo modo, si paga di più per gli spigoli e gli angoli della griglia
+:~ moveIn(_, X, Y), tile(X, Y, L), numAdjacentReachableTiles(X, Y, C). [8-C@9, X,Y]
+
+
+% MID PRIORITY: 
+
+% minimizzare la distanza dalla cella migliore del nemico 
+:~ bestEnemyPawn(X1, Y1), moveIn(_, X, Y), minMovesFromToTiles(X, Y, X1, Y1, C). [C@8, X,Y]
+
+% minimizzare la creazione di celle di livello 4
+:~ placeIn(X, Y), tile(X, Y, L), L=3. [1@7, X,Y]
+
+% massimizzare la creazione di celle di livello 3
+:~ placeIn(X, Y), tile(X, Y, L), L<3. [3-L@6, X,Y]
+
+% minimizzare numero di celle adiacenti di livello 4
+:~ moveIn(_, X, Y), adjacentTileLevelAfterMove(X, Y, _, _, 4). [1@5, X,Y]
+
+
+% LOW PRIORITY:
+
+% massimizzare somma di livelli di celle adiacenti.
+% Anche in questo caso, si paga di più per gli spigoli e gli angoli della griglia (perchè hanno meno celle adiacenti)
+:~ moveIn(_, X, Y), sumAdjacentTileLevelAfterMove(X, Y, Z). [32-Z@4, X,Y]
+
+% pago se la pedina non mossa è in una situazione sfavorevole (cioè se ha 0 o 1 celle adiacenti raggiungibili)
+% serve per evitare che una pedina possa essere bloccata
+:~ dontMovePawn(_,X,Y), numAdjacentReachableTiles(X, Y, C), C<=2. [1@3,X,Y]  
+
+% pago se blocco l'unica cella che la pedina può raggiungere nel turno successivo, sia se è di livello troppo alto sia è di livello 4
+:~ moveIn(_,X,Y), placeIn(X1,Y1), numAdjacentReachableTiles(X, Y, 1), adjacentReachableTiles(X, Y, X1, Y1), tile(X, Y, L), tile(X1, Y1, L1), L1 = L+1. [1@2,X,Y]
+:~ moveIn(_,X,Y), placeIn(X1,Y1), numAdjacentReachableTiles(X, Y, 1), adjacentReachableTiles(X, Y, X1, Y1), tile(X, Y, L), tile(X1, Y1, L1), L1 = 3. [1@2,X,Y]
+
+% pago se blocco l'unica cella che la pedina che non muovo può raggiungere nel turno successivo, sia se è di livello troppo alto sia è di livello 4
+:~ placeIn(X,Y), dontMovePawn(_,X1,Y1),numAdjacentReachableTiles(X, Y, 1), adjacentReachableTiles(X, Y, X1, Y1), tile(X, Y, L), tile(X1, Y1, L1), L1 = L+1. [1@1,X,Y]
+:~ placeIn(X,Y), dontMovePawn(_,X1,Y1),numAdjacentReachableTiles(X, Y, 1), adjacentReachableTiles(X, Y, X1, Y1), tile(X, Y, L), tile(X1, Y1, L1), L1 = 3. [1@1,X,Y]
+
+
+% PREDICATI DI SUPPORTO:
+
+existsTile(X, Y):- tile(X, Y, _).
+
+% seleziona tutte le celle con una qualsiasi pedina diversa da quella appena mossa 
+existsPawn(X, Y):- dontMovePawn(_, X, Y).
+
+existsPawn(X, Y):- pawn(X, Y, _, enemy).
+
+% controlla che due celle (X,Y) e (X1,Y1) siano adiacenti e non siano di livello 4
+adjacentTiles(X, Y, X1, Y1):- tile(X, Y, L), tile(X1, Y1, L1), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1, L!=4, L1!=4, not sameTile(X,Y,X1,Y1).
+
+% calcola la somma TOT dei livelli delle celle adiacenti ad una cella (X,Y) in cui si trova una pedina Index di un certo Team
+sumAdjacentTilesLevel(X, Y, TOT, Index, Team):- pawn(X, Y, Index, Team), tile(X,Y,L), #sum{L1,X1,Y1: tile(X1, Y1, L1), adjacentTiles(X,Y,X1,Y1), L1!=0, L1!=4} = C, TOT=C+L.
+
+% calcola la migliore pedina nemica corrente, ovvero la pedina nemica non bloccata e con somma dei livelli delle celle adiacenti massima
+bestEnemyPawn(X1,Y1) :- #max{C,I : sumAdjacentTilesLevel(X,Y,C,I,enemy), pawn(X,Y,I,enemy), not blockedPawn(X,Y)} = M, sumAdjacentTilesLevel(X1,Y1,M,_,_).
+
+% verifica che due celle (X1,Y1) e (X2,Y2) siano uguali o no
+sameTile(X1, Y1, X2, Y2):- tile(X1, Y1, _), tile(X2, Y2, _), X1 = X2, Y1 = Y2.
+
+% controlla che una cella (X,Y) abbia una pedina nemica vicina
+enemyNextToTile(X, Y, L, L1):- tile(X, Y, L), pawn(X1, Y1, _, enemy), tile(X1, Y1, L1), not sameTile(X, Y, X1, Y1), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1. 
+
+% dopo aver mosso una pedina su cella (X,Y), verifica che ci sia una cella vicina (X1,Y1) di livello L 
+adjacentTileLevelAfterMove(X, Y, X1, Y1, L):- moveIn(_, X, Y), tile(X1, Y1, L), X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1.
+
+% calcola la somma dei livelli di celle adiacenti alla cella (X,Y) su cui ho appena spostato una pedina
+sumAdjacentTileLevelAfterMove(X, Y, C):- #sum{L1,X1,Y1: adjacentTileLevelAfterMove(X, Y, X1, Y1, L1), moveIn(_, X, Y)} = C, tile(X, Y, L).
+
+% controlla che una pedina sia bloccata o meno (cioè non ha più celle adiacenti raggiungibili)
+blockedPawn(X, Y):- pawn(X, Y, Index, Team), #count{X1,Y1 : adjacentReachableTiles(X,Y,X1,Y1)} = 0.
+
+% calcola il numero di celle raggiungibili adiacenti alla cella (X,Y) su cui ho appena spostato una pedina
+numAdjacentReachableTiles(X, Y, C):- #count{X1,Y1: adjacentReachableTiles(X, Y, X1, Y1)} = C, tile(X, Y, _).
+
+% verifica che una cella (X,Y) possa raggiungere un'altra cella adiacente (X1,Y1)
+adjacentReachableTiles(X, Y, X1, Y1):- tile(X, Y, L), tile(X1, Y1, L1), L >= L1-1, X1 >= X-1, X1 <= X+1, Y1 >= Y-1, Y1 <= Y+1, L!=4, L1!=4, not sameTile(X,Y,X1,Y1), not existsPawn(X1,Y1).
+
+% CHIUSURA TRANSITIVA PER CAMMINO MINIMO 
+tileReachesInMoves(X, Y, X1, Y1, 1):- tile(X, Y, _), tile(X1, Y1, _), adjacentReachableTiles(X, Y, X1, Y1).
+
+tileReachesInMoves(X, Y, X2, Y2, C):- tile(X, Y, _), tileReachesInMoves(X, Y, X1, Y1, C1), adjacentReachableTiles(X1, Y1, X2, Y2), C=C1+1, size(S), C1 < S. 
+
+% CAMMINO MINIMO A-B: per ogni coppia di celle (A, B) calcolo il numero minimo di mosse da fare per raggiungere B, partendo da A.
+minMovesFromToTiles(X, Y, X1, Y1, C):- #min{C1: tileReachesInMoves(X, Y, X1, Y1, C1)} = C, moveIn(_, X, Y), tile(X1, Y1, _).
+
+
+% ------------------------------------------------------------------------
+% OUTPUT: move(pawn_index, move_to_x, move_to_y, place_tile_in_x, place_tile_in_y)
+% Soluzione finale:
+move(Pawn, X, Y, X1, Y1):- moveIn(Pawn, X, Y), placeIn(X1, Y1).

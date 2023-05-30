@@ -5,7 +5,6 @@ import com.afgc.wondevwoman.graphic.Tile;
 import com.afgc.wondevwoman.move.Move;
 import com.afgc.wondevwoman.move.MoveProvider;
 import com.afgc.wondevwoman.move.emb.ASPMoveProvider;
-//import com.afgc.wondevwoman.move.emb.francescapier.ASMShortPathProvider;
 import com.afgc.wondevwoman.move.emb.francescapier.ASMShortPathProvider;
 import it.unical.mat.embasp.base.InputProgram;
 import it.unical.mat.embasp.languages.IllegalAnnotationException;
@@ -29,8 +28,8 @@ public final class EmbASPHandler {
 
     private final Consumer<InputProgram> vicineFatto = inputProgram -> inputProgram.addFilesPath("encodings/vicino.asp");
 
-    public DesktopHandler EMJACOPO_PUNTI = registerEMBAspHandler("encodings/RaceToPoints.dlv", null);
-    public DesktopHandler EMJACOPO_NON_PUNTI= registerEMBAspHandler("encodings/RaceToLevel3.dlv", null);
+    public DesktopHandler EMJACOPO_PUNTI = registerEMBAspHandler("encodings/conforti-garofalo-punti.dlv", null);
+    public DesktopHandler EMJACOPO_NON_PUNTI= registerEMBAspHandler("encodings/conforti-garofalo-no-punti.dlv", null);
 
     public DesktopHandler FRANCPIER_PUNTI = registerEMBAspHandler("encodings/altimari-filice-punti.asp", vicineFatto);
     public DesktopHandler FRANCPIER_NON_PUNTI = registerEMBAspHandler("encodings/altimari-filice-no-punti.asp", vicineFatto);

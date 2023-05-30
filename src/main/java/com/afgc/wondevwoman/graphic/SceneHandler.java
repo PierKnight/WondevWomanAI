@@ -18,7 +18,7 @@ public class SceneHandler {
 
     private SceneHandler(){}
 
-    private Parent MENU = loadScene("menu.fxml");
+    private final Parent MENU = loadScene("menu.fxml");
 
     private AnchorPane mainNode;
 
