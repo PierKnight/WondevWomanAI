@@ -1,7 +1,7 @@
 package com.afgc.wondevwoman.graphic;
 
-import com.afgc.wondevwoman.controller.GameHandler;
 import com.afgc.wondevwoman.Settings;
+import com.afgc.wondevwoman.controller.GameHandler;
 import javafx.animation.Transition;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;

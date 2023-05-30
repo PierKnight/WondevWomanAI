@@ -2,9 +2,6 @@ package com.afgc.wondevwoman;
 
 import com.afgc.wondevwoman.move.GameStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MapRegistry {
 
 

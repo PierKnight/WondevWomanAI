@@ -1,8 +1,6 @@
 package com.afgc.wondevwoman;
 
-import com.afgc.wondevwoman.asp.EmbASPHandler;
 import com.afgc.wondevwoman.move.MoveProvider;
-import com.afgc.wondevwoman.move.emb.ASPMoveProvider;
 
 public class Settings {
     public static final int TILES = 7;
